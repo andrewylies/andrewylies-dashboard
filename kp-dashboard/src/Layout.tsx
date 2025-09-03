@@ -1,3 +1,4 @@
+// src/layouts/Layout.tsx (또는 기존 위치에 맞춰서)
 import {
   Container,
   CssBaseline,
@@ -5,27 +6,52 @@ import {
   Typography,
   AppBar,
   Toolbar,
-  Menu,
-  Tooltip,
-  MenuItem,
   Button,
+  Popover,
+  List,
+  ListItemButton,
+  ListItemText,
+  ListItemIcon,
 } from '@mui/material';
 import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
 import { Outlet } from '@tanstack/react-router';
-import '@/global.css';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import * as React from 'react';
+import { MENU_PROFILE } from '@/constants/common';
 
 export const Layout = () => {
-  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const open = Boolean(anchorEl);
 
-  const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+  const openPopover = useCallback((el: HTMLElement) => {
+    setAnchorEl(el);
+  }, []);
+
+  const closePopover = useCallback(() => {
+    setAnchorEl(null);
+  }, []);
+
+  const handleEnter = useCallback(
+    (e: React.MouseEvent<HTMLElement>) => openPopover(e.currentTarget),
+    [openPopover]
+  );
+
+  const handleLeave = useCallback(() => {
+    closePopover();
+  }, [closePopover]);
+
+  const iconMap = useMemo(
+    () => ({
+      github: <GitHubIcon fontSize="small" />,
+      portfolio: <FolderSharedIcon fontSize="small" />,
+      linkedin: <LinkedInIcon fontSize="small" />,
+    }),
+    []
+  );
 
   return (
     <>
@@ -41,44 +67,72 @@ export const Layout = () => {
                 mr: 2,
                 display: 'flex',
                 flexGrow: 1,
+                alignItems: 'center',
                 fontFamily: 'monospace',
                 fontWeight: 700,
                 color: 'inherit',
                 textDecoration: 'none',
-                alignItems: 'anchor-center',
               }}
             >
-              <InsertChartOutlinedIcon sx={{ display: 'flex', mr: 1 }} />
+              <InsertChartOutlinedIcon sx={{ mr: 1 }} />
               Webtoon KPI
             </Typography>
 
-            {/* 사용자 메뉴 */}
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <Button onClick={handleOpenUserMenu} color="inherit">
-                  서문명수
-                </Button>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                anchorEl={anchorElUser}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            {/* Hover Profile Menu */}
+            <Box
+              sx={{ flexGrow: 0, position: 'relative' }}
+              onMouseEnter={handleEnter}
+              onMouseLeave={handleLeave}
+            >
+              <Button
+                color="inherit"
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onMouseEnter={handleEnter}
+                onClick={(e) =>
+                  open ? setAnchorEl(null) : setAnchorEl(e.currentTarget)
+                }
+                startIcon={<AccountCircleIcon fontSize="small" />}
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
+                서문명수
+              </Button>
+
+              <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                  paper: {
+                    onMouseEnter: () => anchorEl && openPopover(anchorEl),
+                    onMouseLeave: handleLeave,
+                  },
+                }}
+                disableRestoreFocus
+              >
+                <List dense>
+                  {MENU_PROFILE.map((item) => (
+                    <ListItemButton
+                      key={item.key}
+                      component="a"
+                      href={item.url}
+                      target="_blank"
+                      onClick={handleLeave}
+                    >
+                      <ListItemIcon sx={{ minWidth: 32, color: 'inherit' }}>
+                        {iconMap[item.key]}
+                      </ListItemIcon>
+                      <ListItemText primary={item.label} />
+                    </ListItemButton>
+                  ))}
+                </List>
+              </Popover>
             </Box>
           </Toolbar>
         </Container>
       </AppBar>
 
-      {/* 컨텐츠 영역 */}
       <Container maxWidth="xl" sx={{ mt: 4, height: '100%' }}>
         <Outlet />
       </Container>
