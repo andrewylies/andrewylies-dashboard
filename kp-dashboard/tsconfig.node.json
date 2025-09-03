@@ -21,5 +21,8 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "../../../Library/Caches/JetBrains/WebStorm2025.2/javascript/typings/node/22.18.0/node_modules/@types/node/module.d.ts"
+  ]
 }
