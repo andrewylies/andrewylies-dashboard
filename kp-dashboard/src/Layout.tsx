@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
 import { Outlet } from '@tanstack/react-router';
-import '@/App.css';
+import '@/global.css';
 import { useState } from 'react';
 import * as React from 'react';
 
