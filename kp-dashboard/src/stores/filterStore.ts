@@ -1,4 +1,3 @@
-// src/stores/filterStore.ts (예시)
 import { create } from 'zustand';
 import type { FilterOption } from '@/types/filter';
 import type { ApiProduct } from '@/types/api';

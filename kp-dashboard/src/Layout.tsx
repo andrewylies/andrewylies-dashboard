@@ -1,4 +1,3 @@
-// src/layouts/Layout.tsx (또는 기존 위치에 맞춰서)
 import {
   Container,
   CssBaseline,
