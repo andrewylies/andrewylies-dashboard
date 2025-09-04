@@ -1,23 +1,15 @@
-export type DashboardSearch = {
-  start?: string;
-  end?: string;
-  publisher?: string;
-  genre?: string;
-  status?: string;
-  author?: string;
-  channel?: 'all' | 'app' | 'web';
-};
+import { FILTER_LABELS } from '@/constants';
 
-export type FilterKey = 'publisher' | 'genre' | 'status';
+export type FilterKey = keyof typeof FILTER_LABELS;
 
 export type FilterOption = {
   value: string;
   label: string;
 };
 
-export interface FilterInputProps {
-  type: FilterKey;
-  value?: string;
-  options: FilterOption[];
-  onChange: (val: string) => void;
-}
+export type FilterOptionsMap = Record<FilterKey, FilterOption[]>;
+
+export type DashboardSearch = {
+  start?: string;
+  end?: string;
+} & Partial<Record<FilterKey, string>>;

@@ -1,6 +1,6 @@
 import { Backdrop, CircularProgress, Box, Typography } from '@mui/material';
 
-export const LoadingOverlay = () => {
+export const OverlayLoading = () => {
   return (
     <Backdrop
       open

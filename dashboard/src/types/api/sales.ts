@@ -1,4 +1,4 @@
-export interface ApiSales {
+export interface Sales {
   productId: number;
   salesDate: string;
   totalSales: number;

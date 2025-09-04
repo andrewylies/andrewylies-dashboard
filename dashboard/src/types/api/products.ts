@@ -1,7 +1,9 @@
-export interface ApiMeta {
-  productId: number;
+import type { Id } from '@/types/common.ts';
+
+export interface Meta {
+  productId: Id;
   title: string;
-  status: string;
+  status: 'A' | 'I' | 'S';
   publisher: string;
   category: string;
   genre: string;
@@ -11,6 +13,6 @@ export interface ApiMeta {
   thumbPath: string;
 }
 
-export interface ApiProduct extends Omit<ApiMeta, 'tags'> {
+export interface Product extends Omit<Meta, 'tags'> {
   tags: string[];
 }

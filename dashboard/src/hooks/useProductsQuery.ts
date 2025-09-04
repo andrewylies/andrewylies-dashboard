@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchMeta } from '@/api';
-import type { ApiProduct } from '@/types/api';
+import type { Product } from '@/types/api';
 import { useFilterStore } from '@/stores/filterStore';
 
 export function useProductsQuery() {
   const setOptions = useFilterStore((s) => s.setOptions);
 
-  const query = useQuery<ApiProduct[]>({
+  const query = useQuery<Product[]>({
     queryKey: ['products'],
     queryFn: async () => {
       const raw = await fetchMeta();

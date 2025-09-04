@@ -20,7 +20,7 @@ import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import * as React from 'react';
-import { MENU_PROFILE } from '@/constants/common';
+import { MENU_PROFILE } from '@/constants';
 
 export const Layout = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);

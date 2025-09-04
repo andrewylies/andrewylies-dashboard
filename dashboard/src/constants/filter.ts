@@ -1,15 +1,19 @@
-import type { FilterKey } from '@/types/filter';
+import type { FilterKey, FilterOption } from '@/types';
 
-export const LABEL_MAP = {
+export const FILTER_LABELS = {
   publisher: '출판사',
   genre: '장르',
   status: '상태',
-} as const satisfies Record<FilterKey, string>;
+  category: '카테고리',
+  tags: '태그',
+} as const;
 
-export const FILTER_LABELS = LABEL_MAP;
-export const FILTER_KEYS = Object.keys(LABEL_MAP) as Array<FilterKey>;
-export const FILTER_ENTRIES = Object.entries(LABEL_MAP) as ReadonlyArray<
-  [FilterKey, string]
->;
+export const STATUS_LABELS: Record<string, string> = {
+  A: '연재중',
+  I: '휴재',
+  S: '연재종료',
+};
 
-export const FILTER_ALL_OPTION = { value: 'all', label: '전체' } as const;
+export const MULTI_KEYS = Object.keys(FILTER_LABELS) as FilterKey[];
+
+export const ALL: FilterOption = { value: 'all', label: '전체' };

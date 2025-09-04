@@ -6,7 +6,7 @@ export interface LineChartProps {
   data: number[];
 }
 
-export const LineChart = memo(({ data }: LineChartProps) => {
+export const ChartLine = memo(({ data }: LineChartProps) => {
   const option: EChartsOption = useMemo(
     () => ({
       xAxis: {

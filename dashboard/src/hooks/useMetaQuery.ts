@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchMeta } from '@/api';
-import type { ApiMeta } from '@/types/api';
+import type { Meta } from '@/types/api';
 
 export const useMetaQuery = () =>
-  useQuery<ApiMeta[]>({
+  useQuery<Meta[]>({
     queryKey: ['meta'],
     queryFn: fetchMeta,
     staleTime: Infinity,
