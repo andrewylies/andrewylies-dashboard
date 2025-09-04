@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  ButtonGroup,
   Chip,
   Dialog,
   DialogActions,
@@ -10,17 +9,17 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import * as React from 'react';
-import { PRESET_RANGES, FILTER_LABELS } from '@/constants';
+import { FILTER_LABELS } from '@/constants';
 import type { FilterKey } from '@/types';
 import { useFilterModal } from '@/hooks/useFilterModal.ts';
 
-type Props = { open: boolean; onClose: () => void };
+import { DatePresetSection } from '@/components/filter/DatePresetSection';
+import { DatePickersSection } from '@/components/filter/DatePickersSection';
 
-const CapsuleSection: React.FC<{
+type ModalProps = { open: boolean; onClose: () => void };
+
+type CapsuleSectionProps = {
   title: string;
   type: FilterKey;
   isAll: boolean;
@@ -28,7 +27,17 @@ const CapsuleSection: React.FC<{
   selected: Set<string>;
   options: { value: string; label: string }[];
   onToggle: (value: string) => void;
-}> = ({ title, type, isAll, onAll, selected, options, onToggle }) => {
+};
+
+const CapsuleSection = ({
+  title,
+  type,
+  isAll,
+  onAll,
+  selected,
+  options,
+  onToggle,
+}: CapsuleSectionProps) => {
   const opts = options.filter((o) => o.value !== 'all');
   return (
     <Box>
@@ -63,9 +72,8 @@ const CapsuleSection: React.FC<{
   );
 };
 
-export const FilterModal: React.FC<Props> = ({ open, onClose }) => {
+export const FilterModal = ({ open, onClose }: ModalProps) => {
   const {
-    // 날짜 상태/오류/프리셋
     start,
     end,
     presetKey,
@@ -76,8 +84,6 @@ export const FilterModal: React.FC<Props> = ({ open, onClose }) => {
     handlePreset,
     handleStartChange,
     handleEndChange,
-
-    // 카테고리/토글
     options,
     pubState,
     genState,
@@ -94,16 +100,11 @@ export const FilterModal: React.FC<Props> = ({ open, onClose }) => {
     toggleStatus,
     toggleCategory,
     toggleTags,
-
-    // 액션
     handleApply,
     handleCancel,
-
-    // 모달 라이프사이클
     syncOnOpen,
   } = useFilterModal(onClose);
 
-  // open 변경 시 URL → 로컬 동기화
   React.useEffect(() => {
     if (open) syncOnOpen();
   }, [open, syncOnOpen]);
@@ -111,58 +112,22 @@ export const FilterModal: React.FC<Props> = ({ open, onClose }) => {
   return (
     <Dialog open={open} onClose={handleCancel} fullWidth maxWidth="md">
       <DialogTitle>필터</DialogTitle>
-
       <DialogContent>
         <Stack spacing={3}>
           {/* 기간 프리셋 */}
-          <Box>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              기간
-            </Typography>
-            <ButtonGroup variant="outlined">
-              {PRESET_RANGES.map((p) => (
-                <Button
-                  key={p.key}
-                  onClick={() => handlePreset(p.key)}
-                  variant={presetKey === p.key ? 'contained' : 'outlined'}
-                >
-                  {p.label}
-                </Button>
-              ))}
-            </ButtonGroup>
-          </Box>
+          <DatePresetSection currentKey={presetKey} onSelect={handlePreset} />
 
-          {/* 날짜 입력 */}
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Box display="flex" gap={2} alignItems="flex-start" flexWrap="wrap">
-              <DatePicker
-                label="시작일"
-                value={start}
-                onChange={handleStartChange}
-                slotProps={{
-                  textField: {
-                    size: 'small',
-                    error: Boolean(startErrorMsg),
-                    helperText: startErrorMsg,
-                  },
-                }}
-              />
-              <DatePicker
-                label="종료일"
-                value={end}
-                onChange={handleEndChange}
-                slotProps={{
-                  textField: {
-                    size: 'small',
-                    error: Boolean(endErrorMsg),
-                    helperText: endErrorMsg,
-                  },
-                }}
-              />
-            </Box>
-          </LocalizationProvider>
+          {/* 날짜 선택 */}
+          <DatePickersSection
+            start={start}
+            end={end}
+            onStart={handleStartChange}
+            onEnd={handleEndChange}
+            startError={startErrorMsg}
+            endError={endErrorMsg}
+          />
 
-          {/* 다중 선택 캡슐 섹션들 */}
+          {/* 다중 선택 캡슐 */}
           <CapsuleSection
             title={FILTER_LABELS.publisher}
             type="publisher"

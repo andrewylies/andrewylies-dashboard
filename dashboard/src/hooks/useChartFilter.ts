@@ -1,4 +1,3 @@
-// src/hooks/useDashboardDerived.ts
 import { useMemo } from 'react';
 import { useProductsQuery } from '@/hooks/useProductsQuery';
 import { useSalesQuery } from '@/hooks/useSalesQuery';

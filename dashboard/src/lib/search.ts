@@ -54,7 +54,7 @@ export const intersectAllFromIndex = (
   let acc: Set<number> | undefined = undefined;
   for (const tag of selected) {
     const bucket = index.get(tag);
-    if (!bucket) return new Set<number>(); // 없는 태그가 하나라도 있으면 공집합
+    if (!bucket) return new Set<number>();
     acc = intersect(acc, bucket);
   }
   return acc;
@@ -110,7 +110,7 @@ export const makeCandidates = (search: DashboardSearch, idx: IndexBundle) => {
   const tagAll = intersectAllFromIndex(idx.byTag, selTags);
   acc = intersect(acc, tagAll);
 
-  return acc; // undefined면 join에서 전체 허용
+  return acc;
 };
 
 /**
@@ -158,7 +158,6 @@ const mapCsv = (csv: string, dict: Record<string, string>) =>
     .map((s) => dict[s] ?? s)
     .join(', ');
 
-// src/lib/search.ts  (추가)
 /**
  * (멀티필터) 전체와 동일하면 undefined(= 쿼리 제거), 아니면 CSV 반환
  * @param st { isAll: boolean; set: Set<string> }

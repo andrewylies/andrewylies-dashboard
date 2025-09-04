@@ -72,7 +72,6 @@ export const sliceByDate = <T extends { salesDate: string }>(
   return sorted.slice(i, j);
 };
 
-// src/lib/time.ts  (추가)
 /**
  * 프리셋 일치 키를 찾는다.
  * @param start Dayjs | null

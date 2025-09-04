@@ -1,4 +1,3 @@
-// src/components/filter/sections/MultiFilterSection.tsx
 import { Box, Chip, Stack, Typography } from '@mui/material';
 import type { FilterKey } from '@/types';
 
