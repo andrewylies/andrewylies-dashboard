@@ -11,6 +11,8 @@ import {
   ListItemButton,
   ListItemText,
   ListItemIcon,
+  ThemeProvider,
+  createTheme,
 } from '@mui/material';
 import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
 import { Outlet } from '@tanstack/react-router';
@@ -21,8 +23,15 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import * as React from 'react';
 import { MENU_PROFILE } from '@/constants';
+import { FilterInitializer } from '@/components/filter/FilterInitializer.tsx';
 
 export const Layout = () => {
+  const theme = createTheme({
+    colorSchemes: {
+      dark: true,
+    },
+  });
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
 
@@ -53,7 +62,7 @@ export const Layout = () => {
   );
 
   return (
-    <>
+    <ThemeProvider theme={theme} defaultMode="system">
       <CssBaseline />
       <AppBar position="static">
         <Container maxWidth="xl">
@@ -133,8 +142,9 @@ export const Layout = () => {
       </AppBar>
 
       <Container maxWidth="xl" sx={{ mt: 4, height: '100%' }}>
+        <FilterInitializer />
         <Outlet />
       </Container>
-    </>
+    </ThemeProvider>
   );
 };

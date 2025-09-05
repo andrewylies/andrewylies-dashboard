@@ -12,4 +12,5 @@ export type FilterOptionsMap = Record<FilterKey, FilterOption[]>;
 export type DashboardSearch = {
   start?: string;
   end?: string;
-} & Partial<Record<FilterKey, string>>;
+} & Partial<Record<FilterKey, string>> &
+  Partial<Record<'platform', string>>;

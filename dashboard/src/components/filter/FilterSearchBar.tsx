@@ -1,10 +1,21 @@
 import { useMemo, useState, useCallback } from 'react';
-import { Box, Chip, Stack, Button } from '@mui/material';
+import {
+  Box,
+  Chip,
+  Stack,
+  styled,
+  Badge,
+  badgeClasses,
+  Button,
+  Grid,
+  Typography,
+} from '@mui/material';
 import TuneIcon from '@mui/icons-material/Tune';
 import { useRouter, useSearch } from '@tanstack/react-router';
 import type { DashboardSearch } from '@/types';
 import { summarizeCsv, buildDateChip, buildMultiChips } from '@/lib';
 import { FilterModal } from '@/components/filter/FilterModal.tsx';
+import { PlatformQuickSwitch } from '@/components/filter/FilterPlatformSwitch.tsx';
 
 export const FilterSearchBar = () => {
   const router = useRouter();
@@ -14,6 +25,12 @@ export const FilterSearchBar = () => {
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);
 
+  const CartBadge = styled(Badge)`
+    & .${badgeClasses.badge} {
+      top: -15px;
+      right: -15px;
+    }
+  `;
   const chips = useMemo(() => {
     const dateChip = buildDateChip(search);
     const multi = buildMultiChips(search, summarizeCsv);
@@ -43,42 +60,86 @@ export const FilterSearchBar = () => {
     }));
   }, [router, search]);
 
+  const clearAll = () => {
+    const platform = search.platform;
+    void router.navigate({
+      to: '/',
+      replace: true,
+      search: (): DashboardSearch => {
+        return platform ? { platform } : {};
+      },
+    });
+  };
+
   return (
     <>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1.5,
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-        }}
-      >
-        {/* 좌측: 선택된 캡슐 */}
-        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-          {chips.map((c) => (
-            <Chip
-              key={String(c.key)}
-              label={c.label}
-              onDelete={c.onDelete}
-              variant="outlined"
-              color="primary"
-              sx={{ borderRadius: 999 }}
-            />
-          ))}
-        </Stack>
-
-        {/* 우측: 필터 버튼 */}
-        <Button
-          variant="outlined"
-          startIcon={<TuneIcon />}
-          onClick={openModal}
-          sx={{ whiteSpace: 'nowrap' }}
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Typography variant="h5" fontWeight={'bolder'}>
+              전체 매출 추이
+            </Typography>
+            <PlatformQuickSwitch />
+          </Box>
+        </Grid>
+        <Grid
+          size={{ xs: 12 }}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            flexWrap: 'wrap',
+          }}
         >
-          필터
-        </Button>
-      </Box>
-
+          {/* 우측: 필터 버튼 */}
+          <Button
+            variant={'outlined'}
+            onClick={openModal}
+            sx={{ whiteSpace: 'nowrap' }}
+            color="primary"
+            startIcon={<TuneIcon fontSize={'small'} />}
+          >
+            <Typography fontSize={'small'} fontWeight={'bolder'}>
+              필터
+            </Typography>
+            <CartBadge
+              badgeContent={chips.length}
+              color="primary"
+              overlap="circular"
+            />
+          </Button>
+          {/* 좌측: 선택된 캡슐 */}
+          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            {chips.map((c) => (
+              <Chip
+                key={String(c.key)}
+                label={c.label}
+                onDelete={c.onDelete}
+                variant="outlined"
+                color="primary"
+                sx={{ borderRadius: 999 }}
+              />
+            ))}
+            {chips.length > 0 && (
+              <Button
+                variant="text"
+                size="small"
+                color="primary"
+                onClick={clearAll} // 👉 전체 필터 초기화 함수 연결
+                sx={{ textTransform: 'none' }}
+              >
+                Clear all
+              </Button>
+            )}
+          </Stack>
+        </Grid>
+      </Grid>
       <FilterModal open={open} onClose={closeModal} />
     </>
   );

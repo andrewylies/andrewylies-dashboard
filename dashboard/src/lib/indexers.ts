@@ -1,4 +1,6 @@
 import type { Product } from '@/types/api';
+import type { FilterKey } from '@/types';
+import { FILTER_KEYS } from '@/constants';
 
 /**
  * 지정한 key 함수로 Product 배열을 역인덱싱한다.
@@ -20,37 +22,62 @@ export const buildIndexBy = (
   return map;
 };
 
-/**
- * 태그(string[]) 역인덱스를 구성한다.
- * tag → Set<productId>
- * @param products Product 배열
- * @returns tag → productId Set
- */
-export const buildTagIndex = (products: readonly Product[]) => {
-  const m = new Map<string, Set<number>>();
-  for (const p of products) {
-    if (!Array.isArray(p.tags)) continue;
-    for (const raw of p.tags) {
-      const tag = (raw ?? '').trim();
-      if (!tag) continue;
-      if (!m.has(tag)) m.set(tag, new Set<number>());
-      m.get(tag)!.add(p.productId);
+/** 여러 Set 교집합 (작은 집합부터) */
+function intersectSets<T>(sets: Set<T>[]): Set<T> {
+  if (sets.length === 0) return new Set<T>();
+  sets.sort((a, b) => a.size - b.size);
+  const [first, ...rest] = sets;
+  const result = new Set(first);
+  for (const s of rest) {
+    for (const v of result) {
+      if (!s.has(v)) result.delete(v);
     }
+    if (result.size === 0) break;
   }
-  return m;
-};
+  return result;
+}
+
+/** 단일 키 values → 합집합 */
+function unionForKey(
+  map: Map<string, Set<number>>,
+  values: string[]
+): Set<number> {
+  const out = new Set<number>();
+  for (const v of values) {
+    const bucket = map.get(v);
+    if (!bucket) continue;
+    for (const id of bucket) out.add(id);
+  }
+  return out;
+}
 
 /**
- * 제품(Product) 관련 역인덱스 번들을 한 번에 구성한다.
- * 포함: byPublisher/byGenre/byStatus/byCategory/byTag/pIndex
- * @param products Product 배열
- * @returns 인덱스 번들 + pIndex(productId → Product)
+ * search 쿼리 + 인덱스(by) + allIds → 후보 productId
+ * - 같은 키의 여러 값은 합집합
+ * - 키 간에는 교집합
  */
-export const buildIndexes = (products: readonly Product[]) => ({
-  byPublisher: buildIndexBy(products, (p) => p.publisher),
-  byGenre: buildIndexBy(products, (p) => p.genre),
-  byStatus: buildIndexBy(products, (p) => p.status),
-  byCategory: buildIndexBy(products, (p) => p.category),
-  byTag: buildTagIndex(products),
-  pIndex: new Map(products.map((p) => [p.productId, p] as const)),
-});
+export function pickCandidates(
+  search: Partial<Record<FilterKey, string>>,
+  by: Record<FilterKey, Map<string, Set<number>>>,
+  allIds: Set<number>
+): Set<number> {
+  const perKeyCandidates: Set<number>[] = [];
+
+  for (const key of FILTER_KEYS) {
+    const raw = search[key];
+    if (!raw) continue;
+
+    const values = raw
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (values.length === 0) continue;
+
+    const union = unionForKey(by[key], values);
+    perKeyCandidates.push(union);
+  }
+
+  return perKeyCandidates.length === 0
+    ? new Set(allIds)
+    : intersectSets(perKeyCandidates);
+}

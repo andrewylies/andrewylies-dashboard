@@ -15,5 +15,8 @@ export const STATUS_LABELS: Record<string, string> = {
 };
 
 export const MULTI_KEYS = Object.keys(FILTER_LABELS) as FilterKey[];
+export const FILTER_KEYS = Object.keys(
+  FILTER_LABELS
+) as (keyof typeof FILTER_LABELS)[];
 
 export const ALL: FilterOption = { value: 'all', label: '전체' };

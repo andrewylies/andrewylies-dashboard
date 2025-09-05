@@ -85,25 +85,17 @@ export const sanitizeCsv = (v: unknown): string | undefined => {
  * - 빈값/공백 제거.
  * - undefined나 빈 결과면 undefined 반환.
  * @param csv CSV 문자열
- * @returns Set<string> or undefined
+ * @returns Set<string> | undefined
  */
-export const csvToSet = (csv?: string) =>
-  csv
-    ? new Set(
-        csv
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      )
-    : undefined;
-
-/**
- * CSV → Set<string> (필터 전용)
- * - 공백/빈값 제거
- * - 'all' 값 제거
- * - 항상 Set<string> 반환(없으면 빈 Set)
- * @param csv CSV 문자열
- */
+export const csvToSet = (csv?: string): Set<string> | undefined => {
+  if (!csv) return undefined;
+  const set = new Set<string>();
+  for (const raw of csv.split(',')) {
+    const v = raw.trim();
+    if (v) set.add(v);
+  }
+  return set.size ? set : undefined;
+};
 export const csvToSetFiltered = (csv?: string) => {
   if (!csv) return new Set<string>();
   return new Set(
@@ -137,14 +129,6 @@ export const summarizeCsv = (label: string, csv: string): string => {
 };
 
 /**
- * 집합 동등성 비교
- * @param a Set<string>
- * @param b Set<string>
- */
-export const eqSet = (a: Set<string>, b: Set<string>) =>
-  a.size === b.size && [...a].every((v) => b.has(v));
-
-/**
  * Set<string> → CSV
  * - 빈 Set이면 undefined 반환(쿼리 제거용)
  * - 정렬 안정화
@@ -156,3 +140,36 @@ export const setToCsv = (set: Set<string>) => {
     .sort((a, b) => a.localeCompare(b))
     .join(',');
 };
+
+/** 1/2/5 스텝 올림 라운딩 (축 max 계산용) */
+export const niceCeil = (v: number) => {
+  if (v <= 0) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(v)));
+  const n = v / p;
+  const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
+  return step * p;
+};
+
+/** ₩ 통화 축약: 천/만/억 (소수 1자리, .0 제거) */
+export const formatKRWShort = (value: number, withSymbol = true) => {
+  const abs = Math.abs(value);
+  const sign = value < 0 ? '-' : '';
+  const unit =
+    abs >= 100_000_000
+      ? { v: abs / 100_000_000, s: '억' }
+      : abs >= 10_000
+        ? { v: abs / 10_000, s: '만' }
+        : abs >= 1_000
+          ? { v: abs / 1_000, s: '천' }
+          : { v: abs, s: '' };
+
+  const num = (
+    unit.v % 1 === 0 ? unit.v.toFixed(0) : unit.v.toFixed(1)
+  ).replace(/\.0$/, '');
+  const head = withSymbol ? '₩' : '';
+  return `${sign}${head}${num}${unit.s}`;
+};
+
+/** 일반 숫자 ₩3,210 형식 */
+export const formatKRW = (value: number) =>
+  `₩${Math.round(value).toLocaleString()}`;

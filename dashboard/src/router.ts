@@ -7,10 +7,11 @@ import type { DashboardSearch } from '@/types/filter';
 import { Layout } from '@/Layout';
 import { Dashboard } from '@/pages/Dashboard';
 import { sanitizeCsv, sanitizeDate } from '@/lib';
-
+import { NotFound } from '@/pages/NotFound.tsx';
 
 const rootRoute = createRootRoute({
   component: Layout,
+  notFoundComponent: NotFound,
 });
 
 const dashboardRoute = createRoute({

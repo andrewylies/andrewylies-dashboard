@@ -68,7 +68,7 @@ export type IndexBundle = {
   byTag: Map<string, Set<number>>;
 };
 
-import { csvToSet } from './string';
+import { csvToSet } from '@/lib';
 import dayjs from 'dayjs';
 import {
   DATE_FORMAT,
@@ -164,14 +164,3 @@ const mapCsv = (csv: string, dict: Record<string, string>) =>
  * @param universe Set<string>
  * @param toCsv (Set<string>) => string | undefined
  */
-export const toCsvIfPartial = (
-  st: { isAll: boolean; set: Set<string> },
-  universe: Set<string>,
-  toCsv: (s: Set<string>) => string | undefined
-) => {
-  if (st.isAll || st.set.size === 0) return undefined;
-  const allCovered =
-    st.set.size === universe.size && [...st.set].every((v) => universe.has(v));
-  if (allCovered) return undefined;
-  return toCsv(st.set);
-};

@@ -1,5 +1,3 @@
-import type { Dayjs } from 'dayjs';
-
 /**
  * salesDate(YYYY-MM-DD) 기준 오름차순 정렬한다.
  * @param rows 정렬 대상
@@ -70,28 +68,4 @@ export const sliceByDate = <T extends { salesDate: string }>(
   const i = lowerBound(dates, s);
   const j = upperBound(dates, e);
   return sorted.slice(i, j);
-};
-
-/**
- * 프리셋 일치 키를 찾는다.
- * @param start Dayjs | null
- * @param end Dayjs | null
- * @param fmt 날짜 포맷 (예: 'YYYY-MM-DD')
- * @param presets { key: string; get: () => {start: string; end: string} }[]
- * @returns string | null
- */
-export const matchPresetKey = (
-  start: Dayjs,
-  end: Dayjs,
-  fmt: string,
-  presets: Array<{ key: string; get: () => { start: string; end: string } }>
-) => {
-  if (!start || !end) return null;
-  const s = start.format(fmt);
-  const e = end.format(fmt);
-  for (const p of presets) {
-    const cand = p.get();
-    if (cand.start === s && cand.end === e) return p.key;
-  }
-  return null;
 };

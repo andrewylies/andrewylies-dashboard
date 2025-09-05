@@ -10,7 +10,7 @@ import {
 } from '@/constants';
 import { useFilterStore } from '@/stores/filterStore';
 import type { DashboardSearch, FilterKey, FilterOptionsMap } from '@/types';
-import { csvToSetFiltered, setToCsv } from '@/lib/string';
+import { csvToSetFiltered, setToCsv } from '@/lib';
 
 type UseFilterModalReturn = {
   /** 선택된 시작일 */
@@ -188,6 +188,12 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
         const next = new Set(target.set);
         if (next.has(value)) next.delete(value);
         else next.add(value);
+        if (next.size === 0) {
+          return {
+            ...prev,
+            [key]: { isAll: true, set: new Set<string>() },
+          } as any;
+        }
         return {
           ...prev,
           [key]: isAllCovered(next, allSets[key])
