@@ -6,7 +6,7 @@ export const FILTER_LABELS = {
   status: '상태',
   category: '카테고리',
   tags: '태그',
-} as const;
+};
 
 export const STATUS_LABELS: Record<string, string> = {
   A: '연재중',

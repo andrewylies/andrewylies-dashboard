@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-export const DEFAULT_PRESET_KEY = '30d' as const;
+export const DEFAULT_PRESET_KEY = '30d';
 
 export const DATE_FORMAT = 'YYYY-MM-DD';
 
@@ -53,4 +53,4 @@ export const PRESET_RANGES = [
       };
     },
   },
-] as const;
+];

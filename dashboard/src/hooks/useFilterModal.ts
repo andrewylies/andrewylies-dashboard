@@ -5,29 +5,85 @@ import {
   DATE_FORMAT,
   DEFAULT_PRESET_KEY,
   ERROR_MESSAGE,
+  MULTI_KEYS,
   PRESET_RANGES,
 } from '@/constants';
 import { useFilterStore } from '@/stores/filterStore';
-import type { DashboardSearch } from '@/types';
+import type { DashboardSearch, FilterKey, FilterOptionsMap } from '@/types';
 import { csvToSetFiltered, setToCsv } from '@/lib/string';
 
-type MultiState = { isAll: boolean; set: Set<string> };
-type EditedField = 'start' | 'end' | null;
+type UseFilterModalReturn = {
+  /** 선택된 시작일 */
+  start: Dayjs | null;
 
+  /** 선택된 종료일 */
+  end: Dayjs | null;
+
+  /** 선택된 날짜 프리셋 키 (예: '7d', '14d') */
+  presetKey: string | null;
+
+  /** 시작일 검증 에러 메시지 */
+  startErrorMsg?: string;
+
+  /** 종료일 검증 에러 메시지 */
+  endErrorMsg?: string;
+
+  /** 날짜 범위가 유효하지 않은지 여부 */
+  hasDateError: boolean;
+
+  /** 프리셋 버튼 클릭 시 날짜/키 변경 */
+  handlePreset: (key: string) => void;
+
+  /** 시작일 변경 핸들러 */
+  handleStartChange: (d: Dayjs | null) => void;
+
+  /** 종료일 변경 핸들러 */
+  handleEndChange: (d: Dayjs | null) => void;
+
+  /** 필터 옵션 목록 (출판사, 장르, 상태 등) */
+  options: FilterOptionsMap;
+
+  /** 각 필터 키별 현재 선택 상태 */
+  multi: Record<FilterKey, MultiState>;
+
+  /** 개별 chip 토글 */
+  toggleValue: (key: FilterKey, value: string) => void;
+
+  /** "전체" 버튼 클릭 */
+  clickAll: (key: FilterKey) => void;
+
+  /** 초기 상태와 비교해 변경이 없는지 여부 */
+  isUnchanged: boolean;
+
+  /** 적용 버튼 핸들러 (URL 쿼리 갱신 + 모달 닫기) */
+  handleApply: () => void;
+
+  /** 취소 버튼 핸들러 (단순 모달 닫기) */
+  handleCancel: () => void;
+
+  /** 모달 열릴 때 URL 검색값을 상태로 동기화 */
+  syncOnOpen: () => void;
+};
+
+type MultiState = { isAll: boolean; set: Set<string> };
 const asAll = (): MultiState => ({ isAll: true, set: new Set() });
 
-/** 모든 후보(allSet)를 정확히 포함하면 '전체'로 간주 */
+type DateRangeState = {
+  start: Dayjs | null;
+  end: Dayjs | null;
+  lastEdited: 'start' | 'end' | null;
+  presetKey: string | null;
+};
+
 const isAllCovered = (sel: Set<string>, allSet: Set<string>) =>
   sel.size === allSet.size && [...sel].every((v) => allSet.has(v));
 
-/** '전체'이면 undefined, 부분선택만 CSV 직렬화 */
 const toCsvIfPartial = (st: MultiState, allSet: Set<string>) => {
   if (st.isAll || st.set.size === 0) return undefined;
   if (isAllCovered(st.set, allSet)) return undefined;
   return setToCsv(st.set);
 };
 
-/** 프리셋 키 매칭: (start,end) 포맷을 묶어 빠르게 비교 */
 const matchPresetKey = (
   start?: Dayjs | null,
   end?: Dayjs | null
@@ -41,56 +97,45 @@ const matchPresetKey = (
   return hit?.key ?? null;
 };
 
-export const useFilterModal = (onClose: () => void) => {
+export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
   const router = useRouter();
   const search = useSearch({ from: '/' }) as DashboardSearch;
   const options = useFilterStore((s) => s.options);
 
-  // 날짜
-  const [start, setStart] = useState<Dayjs | null>(null);
-  const [end, setEnd] = useState<Dayjs | null>(null);
-  const [presetKey, setPresetKey] = useState<string | null>(DEFAULT_PRESET_KEY);
-  const [lastEdited, setLastEdited] = useState<EditedField>(null);
+  const [date, setDate] = useState<DateRangeState>({
+    start: null,
+    end: null,
+    lastEdited: null,
+    presetKey: DEFAULT_PRESET_KEY,
+  });
 
-  // 다중 필터 상태
-  const [pubState, setPubState] = useState<MultiState>(asAll());
-  const [genState, setGenState] = useState<MultiState>(asAll());
-  const [staState, setStaState] = useState<MultiState>(asAll());
-  const [catState, setCatState] = useState<MultiState>(asAll());
-  const [tagState, setTagState] = useState<MultiState>(asAll());
+  const [multi, setMulti] = useState<Record<FilterKey, MultiState>>(
+    () =>
+      Object.fromEntries(MULTI_KEYS.map((k) => [k, asAll()])) as Record<
+        FilterKey,
+        MultiState
+      >
+  );
 
-  // 초기 스냅샷 (Apply 비활성화 판단용)
   const [initial, setInitial] = useState<{
     start?: string;
     end?: string;
     presetKey: string | null;
-    pub: MultiState;
-    gen: MultiState;
-    sta: MultiState;
-    cat: MultiState;
-    tag: MultiState;
+    multi: Record<FilterKey, MultiState>;
   } | null>(null);
 
-  /** 전체 집합(Set) 계산: options → Set<string> */
   const allSets = useMemo(() => {
-    const prune = (arr?: { value: string; label: string }[]) =>
+    const reduce = (arr?: { value: string; label: string }[]) =>
       new Set((arr ?? []).map((o) => o.value).filter((v) => v && v !== 'all'));
     return {
-      publisher: prune(options.publisher),
-      genre: prune(options.genre),
-      status: prune(options.status),
-      category: prune(options.category),
-      tags: prune(options.tags),
-    };
-  }, [
-    options.publisher,
-    options.genre,
-    options.status,
-    options.category,
-    options.tags,
-  ]);
+      publisher: reduce(options.publisher),
+      genre: reduce(options.genre),
+      status: reduce(options.status),
+      category: reduce(options.category),
+      tags: reduce(options.tags),
+    } as Record<FilterKey, Set<string>>;
+  }, [options]);
 
-  /** URL(csv) → MultiState 초기화 */
   const initMulti = useCallback(
     (csv?: string, allSet?: Set<string>): MultiState => {
       const parsed = csvToSetFiltered(csv);
@@ -101,212 +146,109 @@ export const useFilterModal = (onClose: () => void) => {
     []
   );
 
-  /** 모달 열릴 때 URL → 로컬 상태 동기화 */
   const syncOnOpen = useCallback(() => {
-    // 날짜
     let s: Dayjs | null;
     let e: Dayjs | null;
-    let pk: string | null;
 
     if (search.start || search.end) {
       s = search.start ? dayjs(search.start) : null;
       e = search.end ? dayjs(search.end) : null;
-      pk = matchPresetKey(s, e);
     } else {
       const def = PRESET_RANGES.find((x) => x.key === DEFAULT_PRESET_KEY)!;
       const r = def.get();
       s = dayjs(r.start);
       e = dayjs(r.end);
-      pk = DEFAULT_PRESET_KEY;
     }
 
-    setStart(s);
-    setEnd(e);
-    setPresetKey(pk);
-    setLastEdited(null);
+    const pk = matchPresetKey(s, e);
 
-    // 다중 필터
-    const pub = initMulti(search.publisher, allSets.publisher);
-    const gen = initMulti(search.genre, allSets.genre);
-    const sta = initMulti(search.status, allSets.status);
-    const cat = initMulti(search.category, allSets.category);
-    const tag = initMulti(search.tags, allSets.tags);
+    setDate({ start: s, end: e, lastEdited: null, presetKey: pk });
 
-    setPubState(pub);
-    setGenState(gen);
-    setStaState(sta);
-    setCatState(cat);
-    setTagState(tag);
+    const nextMulti: Record<FilterKey, MultiState> = Object.fromEntries(
+      MULTI_KEYS.map((k) => [k, initMulti(search[k], allSets[k])])
+    ) as Record<FilterKey, MultiState>;
+
+    setMulti(nextMulti);
 
     setInitial({
       start: s ? s.format(DATE_FORMAT) : undefined,
       end: e ? e.format(DATE_FORMAT) : undefined,
       presetKey: pk,
-      pub,
-      gen,
-      sta,
-      cat,
-      tag,
+      multi: nextMulti,
     });
-  }, [
-    search.start,
-    search.end,
-    search.publisher,
-    search.genre,
-    search.status,
-    search.category,
-    search.tags,
-    allSets.publisher,
-    allSets.genre,
-    allSets.status,
-    allSets.category,
-    allSets.tags,
-    initMulti,
-  ]);
+  }, [search, allSets, initMulti]);
 
-  /** 프리셋 버튼 */
+  const toggleValue = useCallback(
+    (key: FilterKey, value: string) => {
+      setMulti((prev) => {
+        const target = prev[key];
+        if (target.isAll) {
+          return { ...prev, [key]: { isAll: false, set: new Set([value]) } };
+        }
+        const next = new Set(target.set);
+        if (next.has(value)) next.delete(value);
+        else next.add(value);
+        return {
+          ...prev,
+          [key]: isAllCovered(next, allSets[key])
+            ? asAll()
+            : { isAll: false, set: next },
+        };
+      });
+    },
+    [allSets]
+  );
+
+  const clickAll = useCallback((key: FilterKey) => {
+    setMulti((prev) => ({ ...prev, [key]: asAll() }));
+  }, []);
+
   const handlePreset = useCallback((key: string) => {
     const p = PRESET_RANGES.find((x) => x.key === key);
     if (!p) return;
     const r = p.get();
-    setStart(dayjs(r.start));
-    setEnd(dayjs(r.end));
-    setPresetKey(key);
-    setLastEdited(null);
+    setDate({
+      start: dayjs(r.start),
+      end: dayjs(r.end),
+      lastEdited: null,
+      presetKey: key,
+    });
   }, []);
 
-  /** 날짜 입력 변경 */
-  const handleStartChange = useCallback(
-    (d: Dayjs | null) => {
-      setStart(d);
-      setLastEdited('start');
-      setPresetKey(matchPresetKey(d, end));
-    },
-    [end]
-  );
+  const handleStartChange = useCallback((d: Dayjs | null) => {
+    setDate((prev) => ({
+      ...prev,
+      start: d,
+      lastEdited: 'start',
+      presetKey: matchPresetKey(d, prev.end),
+    }));
+  }, []);
 
-  const handleEndChange = useCallback(
-    (d: Dayjs | null) => {
-      setEnd(d);
-      setLastEdited('end');
-      setPresetKey(matchPresetKey(start, d));
-    },
-    [start]
-  );
+  const handleEndChange = useCallback((d: Dayjs | null) => {
+    setDate((prev) => ({
+      ...prev,
+      end: d,
+      lastEdited: 'end',
+      presetKey: matchPresetKey(prev.start, d),
+    }));
+  }, []);
 
-  /** 날짜 검증 */
-  const bothFilled = Boolean(start && end);
-  const reversed = bothFilled ? end!.isBefore(start!, 'day') : false;
-  const startErrorMsg = useMemo(
-    () =>
-      bothFilled && reversed && lastEdited === 'start'
-        ? ERROR_MESSAGE.filter.start
-        : undefined,
-    [bothFilled, reversed, lastEdited]
-  );
-  const endErrorMsg = useMemo(
-    () =>
-      bothFilled && reversed && lastEdited === 'end'
-        ? ERROR_MESSAGE.filter.end
-        : undefined,
-    [bothFilled, reversed, lastEdited]
-  );
+  const bothFilled = Boolean(date.start && date.end);
+  const reversed = bothFilled ? date.end!.isBefore(date.start!, 'day') : false;
+  const startErrorMsg =
+    bothFilled && reversed && date.lastEdited === 'start'
+      ? ERROR_MESSAGE.filter.start
+      : undefined;
+  const endErrorMsg =
+    bothFilled && reversed && date.lastEdited === 'end'
+      ? ERROR_MESSAGE.filter.end
+      : undefined;
   const hasDateError = reversed;
 
-  /** 다중 필터 토글 (functional setState로 의존성 안전) */
-  const togglePublisher = useCallback(
-    (value: string) =>
-      setPubState((prev) => {
-        if (prev.isAll) return { isAll: false, set: new Set([value]) };
-        const next = new Set(prev.set);
-        if (next.has(value)) {
-          next.delete(value);
-        } else {
-          next.add(value);
-        }
-        return isAllCovered(next, allSets.publisher)
-          ? asAll()
-          : { isAll: false, set: next };
-      }),
-    [allSets.publisher]
-  );
-  const toggleGenre = useCallback(
-    (value: string) =>
-      setGenState((prev) => {
-        if (prev.isAll) return { isAll: false, set: new Set([value]) };
-        const next = new Set(prev.set);
-        if (next.has(value)) {
-          next.delete(value);
-        } else {
-          next.add(value);
-        }
-        return isAllCovered(next, allSets.genre)
-          ? asAll()
-          : { isAll: false, set: next };
-      }),
-    [allSets.genre]
-  );
-  const toggleStatus = useCallback(
-    (value: string) =>
-      setStaState((prev) => {
-        if (prev.isAll) return { isAll: false, set: new Set([value]) };
-        const next = new Set(prev.set);
-        if (next.has(value)) {
-          next.delete(value);
-        } else {
-          next.add(value);
-        }
-        return isAllCovered(next, allSets.status)
-          ? asAll()
-          : { isAll: false, set: next };
-      }),
-    [allSets.status]
-  );
-  const toggleCategory = useCallback(
-    (value: string) =>
-      setCatState((prev) => {
-        if (prev.isAll) return { isAll: false, set: new Set([value]) };
-        const next = new Set(prev.set);
-        if (next.has(value)) {
-          next.delete(value);
-        } else {
-          next.add(value);
-        }
-        return isAllCovered(next, allSets.category)
-          ? asAll()
-          : { isAll: false, set: next };
-      }),
-    [allSets.category]
-  );
-  const toggleTags = useCallback(
-    (value: string) =>
-      setTagState((prev) => {
-        if (prev.isAll) return { isAll: false, set: new Set([value]) };
-        const next = new Set(prev.set);
-        if (next.has(value)) {
-          next.delete(value);
-        } else {
-          next.add(value);
-        }
-        return isAllCovered(next, allSets.tags)
-          ? asAll()
-          : { isAll: false, set: next };
-      }),
-    [allSets.tags]
-  );
-
-  /** 전체 버튼 */
-  const clickAllPublisher = useCallback(() => setPubState(asAll()), []);
-  const clickAllGenre = useCallback(() => setGenState(asAll()), []);
-  const clickAllStatus = useCallback(() => setStaState(asAll()), []);
-  const clickAllCategory = useCallback(() => setCatState(asAll()), []);
-  const clickAllTags = useCallback(() => setTagState(asAll()), []);
-
-  /** 변경 여부(Apply 비활성화 판단) */
   const isUnchanged = useMemo(() => {
     if (!initial) return true;
-    const s = start ? start.format(DATE_FORMAT) : undefined;
-    const e = end ? end.format(DATE_FORMAT) : undefined;
+    const s = date.start ? date.start.format(DATE_FORMAT) : undefined;
+    const e = date.end ? date.end.format(DATE_FORMAT) : undefined;
 
     const eqMulti = (a: MultiState, b: MultiState) =>
       a.isAll === b.isAll &&
@@ -316,106 +258,50 @@ export const useFilterModal = (onClose: () => void) => {
     return (
       initial.start === s &&
       initial.end === e &&
-      initial.presetKey === presetKey &&
-      eqMulti(initial.pub, pubState) &&
-      eqMulti(initial.gen, genState) &&
-      eqMulti(initial.sta, staState) &&
-      eqMulti(initial.cat, catState) &&
-      eqMulti(initial.tag, tagState)
+      initial.presetKey === date.presetKey &&
+      MULTI_KEYS.every((k) => eqMulti(initial.multi[k], multi[k]))
     );
-  }, [
-    initial,
-    start,
-    end,
-    presetKey,
-    pubState,
-    genState,
-    staState,
-    catState,
-    tagState,
-  ]);
+  }, [initial, date, multi]);
 
-  /** 액션 */
   const handleCancel = useCallback(() => {
     onClose();
   }, [onClose]);
 
   const handleApply = useCallback(() => {
     if (hasDateError || isUnchanged) return;
-    const s = start ? start.format(DATE_FORMAT) : undefined;
-    const e = end ? end.format(DATE_FORMAT) : undefined;
+    const s = date.start ? date.start.format(DATE_FORMAT) : undefined;
+    const e = date.end ? date.end.format(DATE_FORMAT) : undefined;
 
     void router.navigate({
       to: '/',
-      search: (prev: DashboardSearch) => ({
-        ...prev,
-        start: s,
-        end: e,
-        publisher: toCsvIfPartial(pubState, allSets.publisher),
-        genre: toCsvIfPartial(genState, allSets.genre),
-        status: toCsvIfPartial(staState, allSets.status),
-        category: toCsvIfPartial(catState, allSets.category),
-        tags: toCsvIfPartial(tagState, allSets.tags),
-      }),
+      search: (prev: DashboardSearch) => {
+        const next = { ...prev, start: s, end: e };
+        MULTI_KEYS.forEach((k) => {
+          next[k] = toCsvIfPartial(multi[k], allSets[k]);
+        });
+        return next;
+      },
     });
     onClose();
-  }, [
-    router,
-    onClose,
-    hasDateError,
-    isUnchanged,
-    start,
-    end,
-    pubState,
-    genState,
-    staState,
-    catState,
-    tagState,
-    allSets.publisher,
-    allSets.genre,
-    allSets.status,
-    allSets.category,
-    allSets.tags,
-  ]);
+  }, [router, onClose, hasDateError, isUnchanged, date, multi, allSets]);
 
   return {
-    // 날짜
-    start,
-    end,
-    presetKey,
+    start: date.start,
+    end: date.end,
+    presetKey: date.presetKey,
     startErrorMsg,
     endErrorMsg,
     hasDateError,
-    isUnchanged,
     handlePreset,
     handleStartChange,
     handleEndChange,
-
-    // 옵션/상태
     options,
-    pubState,
-    genState,
-    staState,
-    catState,
-    tagState,
-
-    // 토글/전체
-    clickAllPublisher,
-    clickAllGenre,
-    clickAllStatus,
-    clickAllCategory,
-    clickAllTags,
-    togglePublisher,
-    toggleGenre,
-    toggleStatus,
-    toggleCategory,
-    toggleTags,
-
-    // 액션
+    multi,
+    toggleValue,
+    clickAll,
+    isUnchanged,
     handleApply,
     handleCancel,
-
-    // 라이프사이클
     syncOnOpen,
   };
 };

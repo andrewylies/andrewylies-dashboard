@@ -1,6 +1,6 @@
-import type { ApiMeta } from '@/types/api';
+import type { Meta } from '@/types/api';
 
-export async function fetchMeta(): Promise<ApiMeta[]> {
+export async function fetchProducts(): Promise<Meta[]> {
   const res = await fetch(
     'https://challenge-cdn.real.piccoma-ext.com/fe/api/products'
   );

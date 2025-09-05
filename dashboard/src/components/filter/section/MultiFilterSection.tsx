@@ -1,5 +1,6 @@
 import { Box, Chip, Stack, Typography } from '@mui/material';
 import type { FilterKey } from '@/types';
+import { ALL } from '@/constants';
 
 type MultiState = { isAll: boolean; set: Set<string> };
 
@@ -33,7 +34,7 @@ export const MultiFilterSection = ({
       </Typography>
       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
         <Chip
-          label="전체"
+          label={ALL.label}
           clickable
           onClick={() => setState(clickAll())}
           color={state.isAll ? 'primary' : 'default'}

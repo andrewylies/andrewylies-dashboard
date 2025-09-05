@@ -1,6 +1,6 @@
-import type { ApiSales } from '@/types/api';
+import type { Sales } from '@/types/api';
 
-export async function fetchSales(): Promise<ApiSales[]> {
+export async function fetchSales(): Promise<Sales[]> {
   const res = await fetch(
     'https://challenge-cdn.real.piccoma-ext.com/fe/api/sales'
   );
