@@ -76,6 +76,7 @@ export const PAGE_TEXT = {
     },
     BUTTON: {
       FILTER: 'Filter',
+      CLEAR_ALL: 'Clear All',
     },
   },
 };

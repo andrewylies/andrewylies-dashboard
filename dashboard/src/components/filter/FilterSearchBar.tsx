@@ -12,29 +12,42 @@ import {
 } from '@mui/material';
 import TuneIcon from '@mui/icons-material/Tune';
 import { useRouter, useSearch } from '@tanstack/react-router';
-import type { DashboardSearch } from '@/types';
+import type { DashboardSearch, FilterKey } from '@/types';
 import { summarizeCsv, buildDateChip, buildMultiChips } from '@/lib';
 import { FilterModal } from '@/components/filter/FilterModal.tsx';
 import { PlatformQuickSwitch } from '@/components/filter/FilterPlatformSwitch.tsx';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { PAGE_TEXT } from '@/constants';
 
+// -------------------- styled & motion 상수 (참조 안정화) --------------------
+const CartBadge = styled(Badge)`
+  & .${badgeClasses.badge} {
+    top: -15px;
+    right: -15px;
+  }
+`;
+
 const MotionBox = motion.div;
+const MOTION_TRANSITION = { duration: 0.15, ease: [0.22, 1, 0.36, 1] } as const;
+const MOTION_INIT = { opacity: 0, scale: 0.96 } as const;
+const MOTION_ANIM = { opacity: 1, scale: 1 } as const;
+const MOTION_EXIT = { opacity: 0, scale: 0.8 } as const;
+
+// ---------------------------------------------------------------------------
 
 export const FilterSearchBar = () => {
   const router = useRouter();
   const search = useSearch({ from: '/' }) as DashboardSearch;
   const [open, setOpen] = useState(false);
 
+  const prefersReduced = useReducedMotion();
+  const init = prefersReduced ? { opacity: 0 } : MOTION_INIT;
+  const anim = prefersReduced ? { opacity: 1 } : MOTION_ANIM;
+  const exit = prefersReduced ? { opacity: 0 } : MOTION_EXIT;
+
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);
 
-  const CartBadge = styled(Badge)`
-    & .${badgeClasses.badge} {
-      top: -15px;
-      right: -15px;
-    }
-  `;
   const chips = useMemo(() => {
     const dateChip = buildDateChip(search);
     const multi = buildMultiChips(search, summarizeCsv);
@@ -58,22 +71,20 @@ export const FilterSearchBar = () => {
                 to: '/',
                 search: (prev: DashboardSearch) => ({
                   ...prev,
-                  [c.key]: undefined,
+                  [c.key as Exclude<FilterKey, 'date'>]: undefined,
                 }),
               }),
     }));
   }, [router, search]);
 
-  const clearAll = () => {
+  const clearAll = useCallback(() => {
     const platform = search.platform;
     void router.navigate({
       to: '/',
       replace: true,
-      search: (): DashboardSearch => {
-        return platform ? { platform } : {};
-      },
+      search: (): DashboardSearch => (platform ? { platform } : {}),
     });
-  };
+  }, [router, search.platform]);
 
   return (
     <>
@@ -86,12 +97,13 @@ export const FilterSearchBar = () => {
               justifyContent: 'space-between',
             }}
           >
-            <Typography variant="h5" fontWeight={'bolder'}>
+            <Typography variant="h5" fontWeight="bolder">
               {PAGE_TEXT.DASHBOARD.TITLE}
             </Typography>
             <PlatformQuickSwitch />
           </Box>
         </Grid>
+
         <Grid
           size={{ xs: 12 }}
           sx={{
@@ -103,21 +115,20 @@ export const FilterSearchBar = () => {
         >
           {/* 우측: 필터 버튼 */}
           <Button
-            variant={'outlined'}
+            variant="outlined"
             onClick={openModal}
-            sx={{ whiteSpace: 'nowrap' }}
+            sx={{ whiteSpace: 'nowrap', fontWeight: 700 }}
             color="primary"
-            startIcon={<TuneIcon fontSize={'small'} />}
+            startIcon={<TuneIcon fontSize="small" />}
           >
-            <Typography fontSize={'small'} fontWeight={'bolder'}>
-              {PAGE_TEXT.DASHBOARD.BUTTON.FILTER}
-            </Typography>
+            {PAGE_TEXT.DASHBOARD.BUTTON.FILTER}
             <CartBadge
               badgeContent={chips.length}
               color="primary"
               overlap="circular"
             />
           </Button>
+
           {/* 좌측: 선택된 캡슐 */}
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
             <AnimatePresence initial={false}>
@@ -125,13 +136,12 @@ export const FilterSearchBar = () => {
                 <MotionBox
                   key={`${c.key}`}
                   layout
-                  initial={{ opacity: 0, scale: 1 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                  initial={init}
+                  animate={anim}
+                  exit={exit}
+                  transition={MOTION_TRANSITION}
                 >
                   <Chip
-                    key={String(c.key)}
                     label={c.label}
                     onDelete={c.onDelete}
                     variant="outlined"
@@ -140,23 +150,24 @@ export const FilterSearchBar = () => {
                   />
                 </MotionBox>
               ))}
+
               {chips.length > 0 && (
                 <MotionBox
-                  key={`clear`}
+                  key="__clear-all__"
                   layout
-                  initial={{ opacity: 0, scale: 1 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                  initial={init}
+                  animate={anim}
+                  exit={exit}
+                  transition={MOTION_TRANSITION}
                 >
                   <Button
                     variant="text"
                     size="small"
                     color="primary"
                     onClick={clearAll}
-                    sx={{ textTransform: 'none' }}
+                    sx={{ textTransform: 'none', fontWeight: 700 }}
                   >
-                    Clear all
+                    {PAGE_TEXT.DASHBOARD.BUTTON.CLEAR_ALL}
                   </Button>
                 </MotionBox>
               )}
@@ -164,6 +175,7 @@ export const FilterSearchBar = () => {
           </Stack>
         </Grid>
       </Grid>
+
       <FilterModal open={open} onClose={closeModal} />
     </>
   );
