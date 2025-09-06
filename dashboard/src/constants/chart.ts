@@ -19,7 +19,7 @@ export const makeSalesLineOption = ({
 
   if (baselineValueList) {
     series.push({
-      name: CHART_TEXT.LEGEND.ALL,
+      name: CHART_TEXT.LINE.LEGEND.ALL,
       type: 'line',
       showSymbol: false,
       smooth: true,
@@ -31,8 +31,8 @@ export const makeSalesLineOption = ({
 
   series.push({
     name: baselineValueList
-      ? CHART_TEXT.LEGEND.FILTERED
-      : CHART_TEXT.LEGEND.ALL,
+      ? CHART_TEXT.LINE.LEGEND.FILTERED
+      : CHART_TEXT.LINE.LEGEND.ALL,
     type: 'line',
     showSymbol: false,
     smooth: true,
@@ -42,9 +42,9 @@ export const makeSalesLineOption = ({
 
   const option: EChartsOption = {
     title: {
-      text: CHART_TEXT.TITLE.LINE,
+      text: CHART_TEXT.LINE.TEXT.TITLE,
       left: 'center',
-      subtext: 'Example in MetricsGraphics.js',
+      subtext: CHART_TEXT.LINE.TEXT.SUB_TITLE,
       top: 15,
     },
     grid: {

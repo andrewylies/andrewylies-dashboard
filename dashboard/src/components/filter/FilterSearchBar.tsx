@@ -16,6 +16,7 @@ import type { DashboardSearch } from '@/types';
 import { summarizeCsv, buildDateChip, buildMultiChips } from '@/lib';
 import { FilterModal } from '@/components/filter/FilterModal.tsx';
 import { PlatformQuickSwitch } from '@/components/filter/FilterPlatformSwitch.tsx';
+import { PAGE_TEXT } from '@/constants';
 
 export const FilterSearchBar = () => {
   const router = useRouter();
@@ -83,7 +84,7 @@ export const FilterSearchBar = () => {
             }}
           >
             <Typography variant="h5" fontWeight={'bolder'}>
-              전체 매출 추이
+              {PAGE_TEXT.DASHBOARD.TITLE}
             </Typography>
             <PlatformQuickSwitch />
           </Box>
@@ -106,7 +107,7 @@ export const FilterSearchBar = () => {
             startIcon={<TuneIcon fontSize={'small'} />}
           >
             <Typography fontSize={'small'} fontWeight={'bolder'}>
-              필터
+              {PAGE_TEXT.DASHBOARD.BUTTON.FILTER}
             </Typography>
             <CartBadge
               badgeContent={chips.length}
@@ -131,7 +132,7 @@ export const FilterSearchBar = () => {
                 variant="text"
                 size="small"
                 color="primary"
-                onClick={clearAll} // 👉 전체 필터 초기화 함수 연결
+                onClick={clearAll}
                 sx={{ textTransform: 'none' }}
               >
                 Clear all

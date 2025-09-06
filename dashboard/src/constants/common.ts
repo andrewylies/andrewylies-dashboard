@@ -14,32 +14,49 @@ export const MENU_PROFILE = [
 
 export const ERROR_MESSAGE = {
   filter: {
-    start: '시작일이 종료일보다 늦습니다.',
-    end: '종료일이 시작일 보다 빠릅니다.',
+    start: 'Start date must not be later than end date.',
+    end: 'End date must not be earlier than start date.',
   },
 };
 
 export const ERROR_CODES = {
   NOT_FOUND: {
-    title: 'NOT FOUND',
-    message: '페이지를 찾을 수 없습니다.',
+    title: 'Not Found',
+    message: 'The page you are looking for does not exist.',
   },
   SERVER_ERROR: {
-    title: 'SERVER ERROR',
-    message: '서버에서 오류가 발생했습니다.',
+    title: 'Server Error',
+    message: 'A server error has occurred. Please try again later.',
   },
   NO_SALES: {
-    title: 'NO SALES',
-    message: '선택한 기간에는 매출 데이터가 없습니다.',
+    title: 'No Sales Data',
+    message: 'No sales records found for the selected period.',
   },
 } as const;
 
 export const CHART_TEXT = {
-  TITLE: {
-    LINE: '기간별 매출 추이',
+  LINE: {
+    TEXT: {
+      TITLE: 'Sales Trends',
+      SUB_TITLE: 'Compare total sales with filtered sales data',
+    },
+    LEGEND: {
+      ALL: 'Total Sales',
+      FILTERED: 'Filtered Sales',
+    },
   },
-  LEGEND: {
-    ALL: '전체 매출',
-    FILTERED: '선택 매출',
+};
+
+export const PAGE_TEXT = {
+  DASHBOARD: {
+    TITLE: 'Overview',
+    PLATFORM: {
+      ALL: 'Total Sales',
+      APP: 'App Sales',
+      WEB: 'Web Sales',
+    },
+    BUTTON: {
+      FILTER: 'Filter',
+    },
   },
 };

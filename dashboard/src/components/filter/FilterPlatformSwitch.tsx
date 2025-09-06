@@ -6,6 +6,7 @@ import SegmentIcon from '@mui/icons-material/Segment';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import type { DashboardSearch } from '@/types';
 import * as React from 'react';
+import { PAGE_TEXT } from '@/constants';
 
 type Platform = 'web' | 'app' | undefined;
 type UIValue = '' | 'web' | 'app'; // '' = 전체
@@ -59,7 +60,7 @@ export const PlatformQuickSwitch = memo(() => {
           }}
         >
           <SegmentIcon fontSize="small" />
-          전체 매출
+          {PAGE_TEXT.DASHBOARD.PLATFORM.ALL}
         </ToggleButton>
         <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
         <ToggleButton
@@ -71,7 +72,8 @@ export const PlatformQuickSwitch = memo(() => {
             gap: 0.5,
           }}
         >
-          <PhoneIphoneIcon fontSize="small" />앱 매출
+          <PhoneIphoneIcon fontSize="small" />
+          {PAGE_TEXT.DASHBOARD.PLATFORM.APP}
         </ToggleButton>
         <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
         <ToggleButton
@@ -83,7 +85,8 @@ export const PlatformQuickSwitch = memo(() => {
             gap: 0.5,
           }}
         >
-          <ComputerIcon fontSize="small" />웹 매출
+          <ComputerIcon fontSize="small" />
+          {PAGE_TEXT.DASHBOARD.PLATFORM.WEB}
         </ToggleButton>
       </ToggleButtonGroup>
     </Paper>
