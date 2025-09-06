@@ -16,7 +16,10 @@ import type { DashboardSearch } from '@/types';
 import { summarizeCsv, buildDateChip, buildMultiChips } from '@/lib';
 import { FilterModal } from '@/components/filter/FilterModal.tsx';
 import { PlatformQuickSwitch } from '@/components/filter/FilterPlatformSwitch.tsx';
+import { AnimatePresence, motion } from 'framer-motion';
 import { PAGE_TEXT } from '@/constants';
+
+const MotionBox = motion.div;
 
 export const FilterSearchBar = () => {
   const router = useRouter();
@@ -117,27 +120,47 @@ export const FilterSearchBar = () => {
           </Button>
           {/* 좌측: 선택된 캡슐 */}
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-            {chips.map((c) => (
-              <Chip
-                key={String(c.key)}
-                label={c.label}
-                onDelete={c.onDelete}
-                variant="outlined"
-                color="primary"
-                sx={{ borderRadius: 999 }}
-              />
-            ))}
-            {chips.length > 0 && (
-              <Button
-                variant="text"
-                size="small"
-                color="primary"
-                onClick={clearAll}
-                sx={{ textTransform: 'none' }}
-              >
-                Clear all
-              </Button>
-            )}
+            <AnimatePresence initial={false}>
+              {chips.map((c) => (
+                <MotionBox
+                  key={`${c.key}`}
+                  layout
+                  initial={{ opacity: 0, scale: 1 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <Chip
+                    key={String(c.key)}
+                    label={c.label}
+                    onDelete={c.onDelete}
+                    variant="outlined"
+                    color="primary"
+                    sx={{ borderRadius: 999 }}
+                  />
+                </MotionBox>
+              ))}
+              {chips.length > 0 && (
+                <MotionBox
+                  key={`clear`}
+                  layout
+                  initial={{ opacity: 0, scale: 1 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <Button
+                    variant="text"
+                    size="small"
+                    color="primary"
+                    onClick={clearAll}
+                    sx={{ textTransform: 'none' }}
+                  >
+                    Clear all
+                  </Button>
+                </MotionBox>
+              )}
+            </AnimatePresence>
           </Stack>
         </Grid>
       </Grid>
