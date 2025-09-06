@@ -92,7 +92,7 @@ export const makeSalesLineOption = ({
 
     yAxis: [
       {
-        name: 'Won(₩)',
+        name: '(₩)',
         type: 'value',
         min: 0,
         max: yMax,
@@ -173,6 +173,7 @@ export const makeSalesStackOption = ({
       right: 15,
     },
     xAxis: {
+      name: '(₩)',
       type: 'value',
       min: 0,
       max: xMax,

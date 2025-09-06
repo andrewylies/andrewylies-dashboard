@@ -3,7 +3,7 @@ import ReactECharts from 'echarts-for-react';
 import type { ECElementEvent, EChartsOption } from 'echarts';
 import { useNavigate } from '@tanstack/react-router';
 import type { DashboardSearch } from '@/types';
-import { useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { formatDateYMD } from '@/lib';
 
 type Props = {
@@ -11,7 +11,11 @@ type Props = {
   type: 'line' | 'bar';
 };
 
-export const ChartSection = ({ option, type }: Props) => {
+const ECHARTS_STYLE = { height: '100%' } as const;
+
+const areEqual = (prev: Props, next: Props) =>
+  prev.type === next.type && prev.option === next.option;
+export const ChartSection = memo(({ option, type }: Props) => {
   const muiTheme = useTheme();
   const mode = muiTheme.palette.mode;
 
@@ -57,16 +61,19 @@ export const ChartSection = ({ option, type }: Props) => {
 
   const onEvents = useMemo(() => ({ click: handleClick }), [handleClick]);
 
+  if (!option) return null;
   return (
     <Paper elevation={1} sx={{ height: 400 }}>
       <ReactECharts
         option={option}
         notMerge
         lazyUpdate
-        theme={mode}
-        style={{ height: '100%' }}
+        theme={mode === 'dark' ? 'dark' : 'light'}
+        style={ECHARTS_STYLE}
         onEvents={onEvents}
       />
     </Paper>
   );
-};
+}, areEqual);
+
+ChartSection.displayName = 'ChartSection';

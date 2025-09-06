@@ -10,7 +10,7 @@ export const MENU_PROFILE = [
     label: 'LinkedIn',
     url: 'https://www.linkedin.com/in/andrewylies',
   },
-] as const;
+];
 
 export const ERROR_MESSAGE = {
   filter: {
@@ -29,10 +29,10 @@ export const ERROR_CODES = {
     message: 'A server error has occurred. Please try again later.',
   },
   NO_SALES: {
-    title: 'No Sales Data',
-    message: 'No sales records found for the selected period.',
+    title: 'No Data Available',
+    message: 'No sales records match the applied filters.',
   },
-} as const;
+};
 
 export const CHART_TEXT = {
   LINE: {
