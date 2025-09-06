@@ -97,6 +97,8 @@ export const FilterSearchBar = () => {
             <Typography variant="h5" fontWeight="bolder">
               {PAGE_TEXT.DASHBOARD.TITLE}
             </Typography>
+
+            {/* 플랫폼 버튼 */}
             <PlatformQuickSwitch />
           </Box>
         </Grid>
@@ -110,7 +112,7 @@ export const FilterSearchBar = () => {
             flexWrap: 'wrap',
           }}
         >
-          {/* 우측: 필터 버튼 */}
+          {/* 필터 버튼 */}
           <Button
             variant="outlined"
             onClick={openModal}
@@ -126,7 +128,7 @@ export const FilterSearchBar = () => {
             />
           </Button>
 
-          {/* 좌측: 선택된 캡슐 */}
+          {/* 캡슐 */}
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
             <AnimatePresence initial={false}>
               {chips.map((c) => (
