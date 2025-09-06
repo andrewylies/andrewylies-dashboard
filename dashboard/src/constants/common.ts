@@ -55,6 +55,19 @@ export const PAGE_TEXT = {
       APP: 'App Sales',
       WEB: 'Web Sales',
     },
+    FILTER: {
+      PERIOD: {
+        TITLE: 'Period',
+        START_DATE: 'Start date',
+        END_DATE: 'End date',
+      },
+      DAYS: {
+        SEVEN_DAYS: '7 Days',
+        FOURTEEN_DAYS: '14 Days',
+        ONE_MONTH: '30 Days',
+        THREE_MONTH: '90 Days',
+      },
+    },
     BUTTON: {
       FILTER: 'Filter',
     },

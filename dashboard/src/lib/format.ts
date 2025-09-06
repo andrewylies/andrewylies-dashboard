@@ -155,19 +155,16 @@ export const formatKRWShort = (value: number, withSymbol = true) => {
   const abs = Math.abs(value);
   const sign = value < 0 ? '-' : '';
   const unit =
-    abs >= 100_000_000
-      ? { v: abs / 100_000_000, s: '억' }
-      : abs >= 10_000
-        ? { v: abs / 10_000, s: '만' }
+    abs >= 1_000_000_000
+      ? { v: abs / 1_000_000_000, s: 'B' }
+      : abs >= 1_000_000
+        ? { v: abs / 1_000_000, s: 'M' }
         : abs >= 1_000
-          ? { v: abs / 1_000, s: '천' }
+          ? { v: abs / 1_000, s: 'K' }
           : { v: abs, s: '' };
 
-  const num = (
-    unit.v % 1 === 0 ? unit.v.toFixed(0) : unit.v.toFixed(1)
-  ).replace(/\.0$/, '');
-  const head = withSymbol ? '₩' : '';
-  return `${sign}${head}${num}${unit.s}`;
+  const formatted = unit.v % 1 === 0 ? unit.v.toString() : unit.v.toFixed(1);
+  return `${sign}${withSymbol ? '₩' : ''}${formatted}${unit.s}`;
 };
 
 /** 일반 숫자 ₩3,210 형식 */

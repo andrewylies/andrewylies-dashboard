@@ -24,7 +24,9 @@ export const CapsuleSection = ({
   const opts = options.filter((o) => o.value !== 'all');
   return (
     <Stack spacing={1}>
-      <Typography variant="subtitle2">{title}</Typography>
+      <Typography variant="subtitle2" fontWeight="bold">
+        {title}
+      </Typography>
       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
         <Chip
           label={ALL.label}

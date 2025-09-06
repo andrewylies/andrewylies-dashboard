@@ -6,7 +6,7 @@ import {
   DialogTitle,
   Stack,
 } from '@mui/material';
-import { FILTER_LABELS } from '@/constants';
+import { FILTER_LABELS, PAGE_TEXT } from '@/constants';
 import type { FilterKey } from '@/types';
 import { useFilterModal } from '@/hooks/useFilterModal.ts';
 import { DatePresetSection } from '@/components/filter/section/DatePresetSection';
@@ -62,7 +62,9 @@ export const FilterModal = ({ open, onClose }: Props) => {
 
   return (
     <Dialog open={open} onClose={handleCancel} fullWidth maxWidth="md">
-      <DialogTitle>필터</DialogTitle>
+      <DialogTitle sx={{ textTransform: 'uppercase' }} fontWeight={'bolder'}>
+        {PAGE_TEXT.DASHBOARD.BUTTON.FILTER}
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={3}>
           <DatePresetSection currentKey={presetKey} onSelect={handlePreset} />

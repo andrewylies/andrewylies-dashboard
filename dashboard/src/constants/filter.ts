@@ -1,11 +1,11 @@
 import type { FilterKey, FilterOption } from '@/types';
 
 export const FILTER_LABELS = {
-  publisher: '출판사',
-  genre: '장르',
-  status: '상태',
-  category: '카테고리',
-  tags: '태그',
+  publisher: 'Publisher',
+  genre: 'Genre',
+  status: 'Status',
+  category: 'Category',
+  tags: 'Tag',
 };
 
 export const STATUS_LABELS: Record<string, string> = {
@@ -19,4 +19,4 @@ export const FILTER_KEYS = Object.keys(
   FILTER_LABELS
 ) as (keyof typeof FILTER_LABELS)[];
 
-export const ALL: FilterOption = { value: 'all', label: '전체' };
+export const ALL: FilterOption = { value: 'all', label: 'All' };

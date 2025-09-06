@@ -1,13 +1,13 @@
 import { Box, Button, ButtonGroup, Typography } from '@mui/material';
-import { PRESET_RANGES } from '@/constants';
+import { PAGE_TEXT, PRESET_RANGES } from '@/constants';
 
 type Props = { currentKey: string | null; onSelect: (key: string) => void };
 
 export const DatePresetSection = ({ currentKey, onSelect }: Props) => {
   return (
     <Box>
-      <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        기간
+      <Typography variant="subtitle2" sx={{ mb: 1 }} fontWeight="bold">
+        {PAGE_TEXT.DASHBOARD.FILTER.PERIOD.TITLE}
       </Typography>
       <ButtonGroup variant="outlined">
         {PRESET_RANGES.map((p) => (
