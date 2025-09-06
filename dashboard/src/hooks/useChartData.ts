@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { EChartsOption } from 'echarts';
 import { notFound } from '@tanstack/react-router';
 import { DEFAULT_PRESET_KEY, PRESET_RANGES } from '@/constants/date';
-import { ERROR_CODES, STACK_MAX_LENGTH } from '@/constants';
+import { ERROR_CODES, STACK_Y_AXIS_MAX_LENGTH } from '@/constants';
 import { makeSalesLineOption, makeSalesStackOption } from '@/constants/chart';
 import { useSalesQuery } from '@/hooks/useSalesQuery';
 import { useProductsQuery } from '@/hooks/useProductsQuery';
@@ -212,7 +212,7 @@ export const useChartData = (search: DashboardSearch) => {
       totals.sort((a, b) => a.total - b.total);
 
       // 출판사 Max
-      const top = totals.slice(0, STACK_MAX_LENGTH);
+      const top = totals.slice(0, STACK_Y_AXIS_MAX_LENGTH);
       const stackCategories = top.map((t) => t.pub);
 
       // 매트릭스 생성

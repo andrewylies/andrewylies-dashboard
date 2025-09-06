@@ -48,7 +48,7 @@ export const CHART_TEXT = {
   STACKED_BAR: {
     TEXT: {
       TITLE: 'Sales by Publisher & Category',
-      SUB_TITLE: 'Compare category contributions within each publisher',
+      SUB_TITLE: 'Top 10 publishers by sales, stacked by category',
     },
   },
 };
