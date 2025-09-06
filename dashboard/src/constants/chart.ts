@@ -45,7 +45,6 @@ export const makeSalesLineOption = ({
       text: CHART_TEXT.TITLE.LINE,
       left: 'center',
     },
-    darkMode: 'auto',
     animation: true,
 
     legend: {
