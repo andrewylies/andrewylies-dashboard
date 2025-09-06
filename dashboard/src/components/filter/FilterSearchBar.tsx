@@ -19,7 +19,6 @@ import { PlatformQuickSwitch } from '@/components/filter/FilterPlatformSwitch.ts
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { PAGE_TEXT } from '@/constants';
 
-// -------------------- styled & motion 상수 (참조 안정화) --------------------
 const CartBadge = styled(Badge)`
   & .${badgeClasses.badge} {
     top: -15px;
@@ -29,11 +28,9 @@ const CartBadge = styled(Badge)`
 
 const MotionBox = motion.div;
 const MOTION_TRANSITION = { duration: 0.15, ease: [0.22, 1, 0.36, 1] } as const;
-const MOTION_INIT = { opacity: 0, scale: 0.96 } as const;
-const MOTION_ANIM = { opacity: 1, scale: 1 } as const;
+const MOTION_INIT = { opacity: 0 } as const;
+const MOTION_ANIM = { opacity: 1 } as const;
 const MOTION_EXIT = { opacity: 0, scale: 0.8 } as const;
-
-// ---------------------------------------------------------------------------
 
 export const FilterSearchBar = () => {
   const router = useRouter();
