@@ -6,8 +6,9 @@ import { memo } from 'react';
 const LOTTIE_SRC =
   'https://lottie.host/b6f121b1-6bb3-4cd4-8959-97e29f486682/3A0trYswEa.lottie';
 
+const LOTTIE_STYLE = { width: '100%', height: '100%' } as const;
 const StaticLottie = memo(() => (
-  <DotLottieReact src={LOTTIE_SRC} loop autoplay />
+  <DotLottieReact src={LOTTIE_SRC} loop autoplay style={LOTTIE_STYLE} />
 ));
 StaticLottie.displayName = 'StaticLottie';
 
