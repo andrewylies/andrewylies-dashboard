@@ -69,3 +69,16 @@ export const sliceByDate = <T extends { salesDate: string }>(
   const j = upperBound(dates, e);
   return sorted.slice(i, j);
 };
+
+import dayjs from 'dayjs';
+
+/**
+ * dayjs 객체나 Date/문자열을 'YYYY-MM-DD' 문자열로 변환.
+ * - 월/일 두 자리 보장.
+ * - 서버/쿼리 파라미터 전송용 표준 포맷.
+ * @param input Date | string | dayjs.Dayjs
+ * @returns YYYY-MM-DD 포맷 문자열
+ */
+export const formatDateYMD = (input?: dayjs.ConfigType): string => {
+  return dayjs(input).format('YYYY-MM-DD');
+};

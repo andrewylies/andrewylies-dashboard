@@ -21,7 +21,7 @@ export const ERROR_MESSAGE = {
 
 export const ERROR_CODES = {
   NOT_FOUND: {
-    title: 'Not Found',
+    title: 'Page Not Found',
     message: 'The page you are looking for does not exist.',
   },
   SERVER_ERROR: {
@@ -45,15 +45,21 @@ export const CHART_TEXT = {
       FILTERED: 'Filtered Sales',
     },
   },
+  STACKED_BAR: {
+    TEXT: {
+      TITLE: 'Sales by Publisher & Category',
+      SUB_TITLE: 'Compare category contributions within each publisher',
+    },
+  },
 };
 
 export const PAGE_TEXT = {
   DASHBOARD: {
     TITLE: 'Overview',
     PLATFORM: {
-      ALL: 'Total Sales',
-      APP: 'App Sales',
-      WEB: 'Web Sales',
+      ALL: 'Total',
+      APP: 'App',
+      WEB: 'Web',
     },
     FILTER: {
       PERIOD: {

@@ -64,7 +64,7 @@ export const Layout = () => {
   return (
     <ThemeProvider theme={theme} defaultMode="system">
       <CssBaseline />
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Container maxWidth="xl">
           <Toolbar
             disableGutters
@@ -143,8 +143,8 @@ export const Layout = () => {
           </Toolbar>
         </Container>
       </AppBar>
-
-      <Container maxWidth="xl" sx={{ mt: 4, height: '100%' }}>
+      <Box sx={theme.mixins.toolbar} />
+      <Container maxWidth="xl" sx={{ height: '100%' }}>
         <FilterInitializer />
         <Outlet />
       </Container>

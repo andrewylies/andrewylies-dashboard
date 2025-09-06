@@ -142,14 +142,26 @@ export const setToCsv = (set: Set<string>) => {
 };
 
 /** 1/2/5 스텝 올림 라운딩 (축 max 계산용) */
-export const niceCeil = (v: number) => {
+export const niceCeil = (
+  v: number,
+  steps: number[] = [1, 2, 5, 10]
+): number => {
   if (v <= 0) return 1;
-  const p = Math.pow(10, Math.floor(Math.log10(v)));
+
+  const p = Math.pow(10, Math.floor(Math.log10(v))); // scale factor
   const n = v / p;
-  const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
+
+  // steps 배열에서 n 이상인 첫 번째 step 선택
+  let step = steps[steps.length - 1];
+  for (const s of steps) {
+    if (n <= s) {
+      step = s;
+      break;
+    }
+  }
+
   return step * p;
 };
-
 /** ₩ 통화 축약: 천/만/억 (소수 1자리, .0 제거) */
 export const formatKRWShort = (value: number, withSymbol = true) => {
   const abs = Math.abs(value);

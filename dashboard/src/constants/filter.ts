@@ -1,6 +1,6 @@
-import type { FilterKey, FilterOption } from '@/types';
+import type { FilterOption } from '@/types';
 
-export const FILTER_LABELS = {
+export const FILTER_LABELS: Record<string, string> = {
   publisher: 'Publisher',
   genre: 'Genre',
   status: 'Status',
@@ -14,9 +14,9 @@ export const STATUS_LABELS: Record<string, string> = {
   S: '연재종료',
 };
 
-export const MULTI_KEYS = Object.keys(FILTER_LABELS) as FilterKey[];
-export const FILTER_KEYS = Object.keys(
-  FILTER_LABELS
-) as (keyof typeof FILTER_LABELS)[];
+export const STACK_MAX_LENGTH: number = 12;
+
+export const MULTI_KEYS: string[] = Object.keys(FILTER_LABELS);
+export const FILTER_KEYS: string[] = Object.keys(FILTER_LABELS);
 
 export const ALL: FilterOption = { value: 'all', label: 'All' };

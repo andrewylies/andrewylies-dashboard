@@ -13,12 +13,12 @@ export const Dashboard = () => {
   const search: DashboardSearch = useSearch({ from: '/' });
   const deferredSearch = useDeferredValue(search);
 
-  const { lineOption, isPending } = useChartData(deferredSearch);
+  const { lineOption, stackOption, isPending } = useChartData(deferredSearch);
 
   if (isPending) return <OverlayLoading />;
 
   return (
-    <Grid container spacing={1}>
+    <Grid container spacing={1} sx={{ pt: 3, pb: 5 }}>
       {/* 검색/필터 바 */}
       <Grid size={{ xs: 12 }}>
         <FilterSearchBar />
@@ -26,7 +26,12 @@ export const Dashboard = () => {
 
       {/* 라인 차트 */}
       <Grid size={{ xs: 12 }}>
-        <ChartSection option={lineOption} />
+        <ChartSection option={lineOption} type={'line'} />
+      </Grid>
+
+      {/* 스택 차트 */}
+      <Grid size={{ xs: 12 }}>
+        <ChartSection option={stackOption} type={'bar'} />
       </Grid>
     </Grid>
   );
