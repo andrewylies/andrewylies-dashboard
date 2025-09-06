@@ -14,7 +14,6 @@ import {
   ThemeProvider,
   createTheme,
 } from '@mui/material';
-import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
 import { Outlet } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -24,6 +23,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import * as React from 'react';
 import { MENU_PROFILE } from '@/constants';
 import { FilterInitializer } from '@/components/filter/FilterInitializer.tsx';
+import { LogoIcon } from '@/components/icon/logo.tsx';
 
 export const Layout = () => {
   const theme = createTheme({
@@ -66,24 +66,27 @@ export const Layout = () => {
       <CssBaseline />
       <AppBar position="static">
         <Container maxWidth="xl">
-          <Toolbar disableGutters>
+          <Toolbar
+            disableGutters
+            sx={{ display: 'flex', justifyContent: 'space-between' }}
+          >
             <Typography
               noWrap
               component="a"
               href="/"
               sx={{
-                mr: 2,
                 display: 'flex',
-                flexGrow: 1,
+                gap: 2,
                 alignItems: 'center',
                 fontFamily: 'monospace',
                 fontWeight: 700,
                 color: 'inherit',
                 textDecoration: 'none',
+                height: 35,
+                textTransform: 'uppercase',
               }}
             >
-              <InsertChartOutlinedIcon sx={{ mr: 1 }} />
-              Webtoon KPI
+              <LogoIcon /> Sales Dashboard
             </Typography>
 
             {/* Hover Profile Menu */}
