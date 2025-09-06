@@ -3,11 +3,7 @@ import type { EChartsOption } from 'echarts';
 import { notFound } from '@tanstack/react-router';
 import { DEFAULT_PRESET_KEY, PRESET_RANGES } from '@/constants/date';
 import { ERROR_CODES, STACK_MAX_LENGTH } from '@/constants';
-import {
-  makeSalesLineOption,
-  makeSalesStackOption,
-  STACKED_BAR_SCALE_SET,
-} from '@/constants/chart';
+import { makeSalesLineOption, makeSalesStackOption } from '@/constants/chart';
 import { useSalesQuery } from '@/hooks/useSalesQuery';
 import { useProductsQuery } from '@/hooks/useProductsQuery';
 import type { DashboardSearch } from '@/types';
@@ -242,7 +238,7 @@ export const useChartData = (search: DashboardSearch) => {
         stackCategories,
         stackStacks,
         stackMatrix,
-        stackXMax: niceCeil(maxX, STACKED_BAR_SCALE_SET),
+        stackXMax: niceCeil(maxX),
       };
     }, [sales, products, candidates, getVal, start, end]);
 

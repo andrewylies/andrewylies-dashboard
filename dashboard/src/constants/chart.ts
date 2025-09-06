@@ -191,5 +191,3 @@ export const makeSalesStackOption = ({
     progressiveThreshold: 2000,
   };
 };
-
-export const STACKED_BAR_SCALE_SET = [1.2, 2, 4];
