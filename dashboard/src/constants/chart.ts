@@ -44,11 +44,16 @@ export const makeSalesLineOption = ({
     title: {
       text: CHART_TEXT.TITLE.LINE,
       left: 'center',
+      subtext: 'Example in MetricsGraphics.js',
+      top: 15,
+    },
+    grid: {
+      top: 100,
+      bottom: 80,
     },
     animation: true,
-
     legend: {
-      bottom: 0,
+      bottom: 15,
       orient: 'horizontal',
     },
     tooltip: { trigger: 'axis' },
@@ -56,6 +61,8 @@ export const makeSalesLineOption = ({
       feature: {
         saveAsImage: {},
       },
+      top: 15,
+      right: 15,
     },
 
     xAxis: [
@@ -80,6 +87,7 @@ export const makeSalesLineOption = ({
 
     yAxis: [
       {
+        name: '원(₩)',
         type: 'value',
         min: 0,
         max: yMax,

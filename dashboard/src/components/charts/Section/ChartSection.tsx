@@ -10,8 +10,14 @@ export const ChartSection = ({ option }: Props) => {
   const muiTheme = useTheme();
   const mode = muiTheme.palette.mode;
   return (
-    <Paper elevation={1}>
-      <ReactECharts option={option} notMerge lazyUpdate theme={mode} />
+    <Paper elevation={1} sx={{ height: 400 }}>
+      <ReactECharts
+        option={option}
+        notMerge
+        lazyUpdate
+        theme={mode}
+        style={{ height: '100%' }}
+      />
     </Paper>
   );
 };
