@@ -25,7 +25,7 @@ export const CapsuleSection = ({
   return (
     <Stack spacing={1}>
       <Typography variant="subtitle2" fontWeight="bold">
-        {title}
+        {title} <Typography variant={'caption'}>{opts.length}</Typography>
       </Typography>
       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
         <Chip
