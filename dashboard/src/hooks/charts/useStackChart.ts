@@ -31,9 +31,9 @@ export const useStackChart = ({
     useMemo(() => {
       if (!sales.length || !products.length) {
         return {
-          stackCategories: [] as string[],
-          stackStacks: [] as string[],
-          stackMatrix: [] as number[][],
+          stackCategories: [],
+          stackStacks: [],
+          stackMatrix: [],
           stackXMax: 1,
         };
       }
@@ -75,9 +75,9 @@ export const useStackChart = ({
 
       if (agg.size === 0) {
         return {
-          stackCategories: [] as string[],
-          stackStacks: [] as string[],
-          stackMatrix: [] as number[][],
+          stackCategories: [],
+          stackStacks: [],
+          stackMatrix: [],
           stackXMax: 1,
         };
       }

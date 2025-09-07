@@ -27,9 +27,9 @@ export const useLineChart = ({
   const { dateList, valueList, baselineValueList, yMax } = useMemo(() => {
     if (!sales.length) {
       return {
-        dateList: [] as string[],
-        valueList: [] as number[],
-        baselineValueList: undefined as number[] | undefined,
+        dateList: [],
+        valueList: [],
+        baselineValueList: undefined,
         yMax: 1,
       };
     }

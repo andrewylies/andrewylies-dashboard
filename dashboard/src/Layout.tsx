@@ -15,7 +15,7 @@ import {
   createTheme,
 } from '@mui/material';
 import { Outlet } from '@tanstack/react-router';
-import { useCallback, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useMemo, useState } from 'react';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
@@ -24,6 +24,7 @@ import * as React from 'react';
 import { MENU_PROFILE } from '@/constants';
 import { FilterInitializer } from '@/components/filter/FilterInitializer.tsx';
 import { LogoIcon } from '@/components/icon/logo.tsx';
+import type { ProfileKey } from '@/types';
 
 export const Layout = () => {
   const theme = createTheme({
@@ -52,7 +53,7 @@ export const Layout = () => {
     closePopover();
   }, [closePopover]);
 
-  const iconMap = useMemo(
+  const iconMap: Record<ProfileKey, ReactElement> = useMemo(
     () => ({
       github: <GitHubIcon fontSize="small" />,
       portfolio: <FolderSharedIcon fontSize="small" />,

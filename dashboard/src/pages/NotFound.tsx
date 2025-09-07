@@ -3,10 +3,10 @@ import { ERROR_CODES } from '@/constants';
 import { Box, Button, Container, Typography } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import type { ErrorProps } from '@/types';
 
 export function NotFound({ data }: NotFoundRouteProps) {
-  const error = data as { title?: string; message?: string } | undefined;
-
+  const error = data as ErrorProps;
   return (
     <Container
       maxWidth="sm"

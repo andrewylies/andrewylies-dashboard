@@ -1,4 +1,6 @@
-export const MENU_PROFILE = [
+import type { ProfileItem } from '@/types';
+
+export const MENU_PROFILE: ProfileItem[] = [
   {
     key: 'portfolio',
     label: 'Portfolio',

@@ -99,7 +99,7 @@ const matchPresetKey = (
 
 export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
   const router = useRouter();
-  const search = useSearch({ from: '/' }) as DashboardSearch;
+  const search = useSearch({ from: '/' });
   const options = useFilterStore((s) => s.options);
 
   const [date, setDate] = useState<DateRangeState>({
@@ -109,12 +109,8 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
     presetKey: DEFAULT_PRESET_KEY,
   });
 
-  const [multi, setMulti] = useState<Record<FilterKey, MultiState>>(
-    () =>
-      Object.fromEntries(MULTI_KEYS.map((k) => [k, asAll()])) as Record<
-        FilterKey,
-        MultiState
-      >
+  const [multi, setMulti] = useState<Record<FilterKey, MultiState>>(() =>
+    Object.fromEntries(MULTI_KEYS.map((k) => [k, asAll()]))
   );
 
   const [initial, setInitial] = useState<{
@@ -124,7 +120,7 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
     multi: Record<FilterKey, MultiState>;
   } | null>(null);
 
-  const allSets = useMemo(() => {
+  const allSets: Record<FilterKey, Set<string>> = useMemo(() => {
     const reduce = (arr?: { value: string; label: string }[]) =>
       new Set((arr ?? []).map((o) => o.value).filter((v) => v && v !== 'all'));
     return {
@@ -133,7 +129,7 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
       status: reduce(options.status),
       category: reduce(options.category),
       tags: reduce(options.tags),
-    } as Record<FilterKey, Set<string>>;
+    };
   }, [options]);
 
   const initMulti = useCallback(
@@ -166,7 +162,7 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
 
     const nextMulti: Record<FilterKey, MultiState> = Object.fromEntries(
       MULTI_KEYS.map((k) => [k, initMulti(search[k], allSets[k])])
-    ) as Record<FilterKey, MultiState>;
+    );
 
     setMulti(nextMulti);
 
@@ -192,7 +188,7 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
           return {
             ...prev,
             [key]: { isAll: true, set: new Set<string>() },
-          } as any;
+          };
         }
         return {
           ...prev,
@@ -275,19 +271,26 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
 
   const handleApply = useCallback(() => {
     if (hasDateError || isUnchanged) return;
+
     const s = date.start ? date.start.format(DATE_FORMAT) : undefined;
     const e = date.end ? date.end.format(DATE_FORMAT) : undefined;
 
+    // 🔒 멀티 필터를 부분 객체로 먼저 구성
+    const multiPatch: Partial<Record<FilterKey, string | undefined>> = {};
+    MULTI_KEYS.forEach((k) => {
+      multiPatch[k] = toCsvIfPartial(multi[k], allSets[k]);
+    });
+
     void router.navigate({
       to: '/',
-      search: (prev: DashboardSearch) => {
-        const next = { ...prev, start: s, end: e };
-        MULTI_KEYS.forEach((k) => {
-          next[k] = toCsvIfPartial(multi[k], allSets[k]);
-        });
-        return next;
-      },
+      search: (prev: DashboardSearch) => ({
+        ...prev,
+        start: s,
+        end: e,
+        ...multiPatch,
+      }),
     });
+
     onClose();
   }, [router, onClose, hasDateError, isUnchanged, date, multi, allSets]);
 

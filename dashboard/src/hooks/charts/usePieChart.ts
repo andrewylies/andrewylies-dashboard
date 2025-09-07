@@ -32,10 +32,10 @@ export const usePieChart = ({
   } = useMemo(() => {
     if (!products.length) {
       return {
-        pieGenreLabelsSales: [] as string[],
-        pieGenreValuesSales: [] as number[],
-        pieGenreLabelsCount: [] as string[],
-        pieGenreValuesCount: [] as number[],
+        pieGenreLabelsSales: [],
+        pieGenreValuesSales: [],
+        pieGenreLabelsCount: [],
+        pieGenreValuesCount: [],
       };
     }
 
