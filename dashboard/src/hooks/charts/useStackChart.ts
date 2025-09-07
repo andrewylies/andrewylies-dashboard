@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import type { EChartsOption } from 'echarts';
 import type { Sales } from '@/types/api/sales';
+import type { Product } from '@/types/api/products';
 import { sortSalesByDate, sliceByDate } from '@/lib/time';
 import { niceCeil } from '@/lib/format';
 import { makeSalesStackOption } from '@/constants/charts/stack';
-import type { ChartCommon } from './common';
 import { STACK_Y_AXIS_MAX_LENGTH } from '@/constants';
 
 export type UseStackChartResult = {
@@ -16,7 +16,7 @@ export type UseStackChartResult = {
 };
 
 /**
- * 스택 차트 옵션을 생성하는 훅
+ * 스택 차트 옵션을 생성하는 훅 (명시적 props, 기존 알고리즘 유지)
  */
 export const useStackChart = ({
   sales,
@@ -25,13 +25,17 @@ export const useStackChart = ({
   end,
   candidates,
   getVal,
-}: Pick<
-  ChartCommon,
-  'sales' | 'products' | 'start' | 'end' | 'candidates' | 'getVal'
->): UseStackChartResult => {
+}: {
+  sales: Sales[];
+  products: Product[];
+  start: string;
+  end: string;
+  candidates?: Set<number>;
+  getVal: (s: Sales) => number;
+}): UseStackChartResult => {
   const { stackCategories, stackStacks, stackMatrix, stackXMax } =
     useMemo(() => {
-      if (!sales.length || !products.length) {
+      if (sales.length === 0 || products.length === 0) {
         return {
           stackCategories: [],
           stackStacks: [],
@@ -40,6 +44,7 @@ export const useStackChart = ({
         };
       }
 
+      // 제품 메타 매핑
       const meta = new Map<number, { publisher: string; category: string }>();
       for (const p of products) {
         meta.set(p.productId, {
@@ -48,9 +53,11 @@ export const useStackChart = ({
         });
       }
 
+      // 날짜 정렬 및 구간 슬라이스 (기존 유틸 유지)
       const { sorted, dates } = sortSalesByDate<Sales>(sales);
       const sliced = sliceByDate<Sales>(sorted, dates, start, end);
 
+      // 집계: publisher → (category → value)
       const agg = new Map<string, Map<string, number>>();
       const cats = new Set<string>();
       const useFilter = !!candidates;
@@ -84,8 +91,10 @@ export const useStackChart = ({
         };
       }
 
+      // 스택(열) = 카테고리(여기선 작품 카테고리)
       const stackStacks = Array.from(cats.values()).sort();
 
+      // 퍼블리셔별 합산 후 상위 N개 선택 (기존 정렬 방향 유지)
       const totals: Array<{ pub: string; total: number }> = [];
       for (const [pub, catMap] of agg) {
         let sum = 0;
@@ -97,19 +106,21 @@ export const useStackChart = ({
       const top = totals.slice(0, STACK_Y_AXIS_MAX_LENGTH);
       const stackCategories = top.map((t) => t.pub);
 
+      // 매트릭스 [stack(si)][category(ci)]
       const stackMatrix: number[][] = stackStacks.map(() =>
         new Array(stackCategories.length).fill(0)
       );
-      let maxX = 0;
 
-      for (let pi = 0; pi < stackCategories.length; pi++) {
-        const pub = stackCategories[pi];
+      let maxX = 0;
+      for (let ci = 0; ci < stackCategories.length; ci++) {
+        const pub = stackCategories[ci];
         const catMap = agg.get(pub)!;
         let rowSum = 0;
+
         for (let si = 0; si < stackStacks.length; si++) {
           const cat = stackStacks[si];
           const v = catMap.get(cat) ?? 0;
-          stackMatrix[si][pi] = v;
+          stackMatrix[si][ci] = v;
           rowSum += v;
         }
         if (rowSum > maxX) maxX = rowSum;

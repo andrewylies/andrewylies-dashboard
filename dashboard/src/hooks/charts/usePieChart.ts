@@ -2,9 +2,7 @@ import { useMemo } from 'react';
 import type { EChartsOption } from 'echarts';
 import type { Sales } from '@/types/api/sales';
 import type { Product } from '@/types/api/products';
-import { sortSalesByDate, sliceByDate } from '@/lib/time';
 import { makeGenrePieOption } from '@/constants/charts/pie';
-import type { ChartCommon } from './common';
 
 export type PieOptions = {
   /** 장르별 매출 비율 */
@@ -13,107 +11,150 @@ export type PieOptions = {
   count?: EChartsOption;
 };
 
-/**
- * 원형 차트 옵션을 생성하는 훅
- */
+type Props = {
+  sales: Sales[];
+  start: string;
+  end: string;
+  products: Product[];
+  candidates?: Set<number>;
+  /** 합산 기준 지표 (예: totalSales / webSales / appSales 등) */
+  getVal: (s: Sales) => number;
+};
+
+/** 불변 베이스 옵션(상수화): 데이터와 무관한 공통 파츠는 재사용 */
+const PIE_BASE = {
+  tooltip: { trigger: 'item' },
+  legend: { type: 'scroll', bottom: 0 },
+} as const;
+
+function lowerBound(arr: readonly number[], target: number): number {
+  let lo = 0,
+    hi = arr.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >>> 1;
+    if (arr[mid] < target) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo;
+}
+
+function upperBound(arr: readonly number[], target: number): number {
+  let lo = 0,
+    hi = arr.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >>> 1;
+    if (arr[mid] <= target) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo;
+}
+
 export const usePieChart = ({
   sales,
-  products,
   start,
   end,
+  products,
   candidates,
   getVal,
-}: Pick<
-  ChartCommon,
-  'sales' | 'products' | 'start' | 'end' | 'candidates' | 'getVal'
->): { pieOption: PieOptions } => {
-  const {
-    pieGenreLabelsSales,
-    pieGenreValuesSales,
-    pieGenreLabelsCount,
-    pieGenreValuesCount,
-  } = useMemo(() => {
-    if (!products.length) {
+}: Props) => {
+  // 정렬 + 타임스탬프 배열 (1회)
+  const prepared = useMemo(() => {
+    if (sales.length === 0) {
       return {
-        pieGenreLabelsSales: [],
-        pieGenreValuesSales: [],
-        pieGenreLabelsCount: [],
-        pieGenreValuesCount: [],
+        rows: [] as Array<Sales & { __ts: number }>,
+        ts: [] as number[],
+      };
+    }
+    const rows: Array<Sales & { __ts: number }> = sales.map((s) => ({
+      ...s,
+      __ts: new Date(s.salesDate).getTime(),
+    }));
+    rows.sort((a, b) => a.__ts - b.__ts);
+    const ts = rows.map((r) => r.__ts);
+    return { rows, ts };
+  }, [sales]);
+
+  // 경계 ms
+  const { startTs, endTs } = useMemo(() => {
+    const s = start ? new Date(start).getTime() : Number.NEGATIVE_INFINITY;
+    const e = end ? new Date(end).getTime() : Number.POSITIVE_INFINITY;
+    return { startTs: s, endTs: e };
+  }, [start, end]);
+
+  // 이진탐색으로 구간 추출
+  const [lo, hi] = useMemo<[number, number]>(() => {
+    if (prepared.ts.length === 0) return [0, 0];
+    const l = lowerBound(prepared.ts, startTs);
+    const r = upperBound(prepared.ts, endTs);
+    return [l, r];
+  }, [prepared.ts, startTs, endTs]);
+
+  // productId -> genre 매핑 (고정)
+  const productGenre = useMemo(() => {
+    const map = new Map<number, string>();
+    for (const p of products) map.set(p.productId, p.genre ?? 'Unknown');
+    return map;
+  }, [products]);
+
+  // ✅ 단일 패스 집계: 장르별 매출 합, 건수 합
+  const { labelsSales, valuesSales, labelsCount, valuesCount } = useMemo(() => {
+    if (hi <= lo) {
+      return {
+        labelsSales: [] as string[],
+        valuesSales: [] as number[],
+        labelsCount: [] as string[],
+        valuesCount: [] as number[],
       };
     }
 
-    const productIdToGenre = new Map<number, string>();
-    for (const p of products as Product[]) {
-      productIdToGenre.set(p.productId, p.genre || '기타');
+    const filtered = prepared.rows.slice(lo, hi);
+    const useFilter = !!candidates;
+
+    const salesByGenre = new Map<string, number>();
+    const countByGenre = new Map<string, number>();
+
+    for (let i = 0; i < filtered.length; i++) {
+      const row = filtered[i];
+      if (useFilter && !candidates!.has(row.productId)) continue;
+
+      const genre = productGenre.get(row.productId) ?? 'Unknown';
+      salesByGenre.set(genre, (salesByGenre.get(genre) ?? 0) + getVal(row));
+      countByGenre.set(genre, (countByGenre.get(genre) ?? 0) + 1);
     }
 
-    const genreCount = new Map<string, number>();
-    {
-      const pool =
-        candidates ?? new Set<number>(products.map((p) => p.productId));
-      for (const id of pool) {
-        const g = productIdToGenre.get(id) ?? '기타';
-        genreCount.set(g, (genreCount.get(g) ?? 0) + 1);
-      }
-    }
+    // label 정렬(안정적인 렌더링 순서)
+    const labelsSales = Array.from(salesByGenre.keys()).sort();
+    const valuesSales = labelsSales.map((g) => salesByGenre.get(g) ?? 0);
 
-    const genreSales = new Map<string, number>();
-    if (sales.length) {
-      const { sorted, dates } = sortSalesByDate<Sales>(sales);
-      const sliced = sliceByDate<Sales>(sorted, dates, start, end);
-      const useFilter = !!candidates;
+    const labelsCount = Array.from(countByGenre.keys()).sort();
+    const valuesCount = labelsCount.map((g) => countByGenre.get(g) ?? 0);
 
-      for (let i = 0; i < sliced.length; i++) {
-        const row = sliced[i];
-        if (useFilter && !candidates!.has(row.productId)) continue;
-        const g = productIdToGenre.get(row.productId) ?? '기타';
-        genreSales.set(g, (genreSales.get(g) ?? 0) + getVal(row));
-      }
-    }
+    return { labelsSales, valuesSales, labelsCount, valuesCount };
+  }, [prepared.rows, lo, hi, candidates, productGenre, getVal]);
 
-    const toVectors = (m: Map<string, number>) => {
-      const arr = Array.from(m.entries());
-      arr.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-      return { labels: arr.map(([k]) => k), values: arr.map(([, v]) => v) };
-    };
-
-    const salesVec = toVectors(genreSales);
-    const countVec = toVectors(genreCount);
-
-    return {
-      pieGenreLabelsSales: salesVec.labels,
-      pieGenreValuesSales: salesVec.values,
-      pieGenreLabelsCount: countVec.labels,
-      pieGenreValuesCount: countVec.values,
-    };
-  }, [products, sales, candidates, getVal, start, end]);
-
-  const pieOption: PieOptions = useMemo(() => {
+  // 옵션 생성: 데이터만 주입, 나머지는 상수화된 베이스 재사용
+  const pieOption = useMemo<{
+    sales?: EChartsOption;
+    count?: EChartsOption;
+  }>(() => {
     const salesOpt =
-      pieGenreLabelsSales.length > 0
-        ? makeGenrePieOption({
-            labels: pieGenreLabelsSales,
-            values: pieGenreValuesSales,
-            subtitle: 'Sales Share',
-          })
+      labelsSales.length > 0
+        ? {
+            ...PIE_BASE,
+            ...makeGenrePieOption({ labels: labelsSales, values: valuesSales }),
+          }
         : undefined;
 
     const countOpt =
-      pieGenreLabelsCount.length > 0
-        ? makeGenrePieOption({
-            labels: pieGenreLabelsCount,
-            values: pieGenreValuesCount,
-            subtitle: 'Titles Share',
-          })
+      labelsCount.length > 0
+        ? {
+            ...PIE_BASE,
+            ...makeGenrePieOption({ labels: labelsCount, values: valuesCount }),
+          }
         : undefined;
 
     return { sales: salesOpt, count: countOpt };
-  }, [
-    pieGenreLabelsSales,
-    pieGenreValuesSales,
-    pieGenreLabelsCount,
-    pieGenreValuesCount,
-  ]);
+  }, [labelsSales, valuesSales, labelsCount, valuesCount]);
 
   return { pieOption };
 };
