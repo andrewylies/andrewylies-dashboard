@@ -1,1 +1,0 @@
-export const CHART_SECTION_DEFAULT_HEIGHT = 400;

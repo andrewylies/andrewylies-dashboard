@@ -10,6 +10,10 @@ export function useProductsQuery() {
   const query = useQuery<Meta[], Error, Product[]>({
     queryKey: ['products'],
     queryFn: fetchProducts,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     select: (raw) =>
       raw.map((data) => ({
         ...data,

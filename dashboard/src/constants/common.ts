@@ -1,4 +1,5 @@
 import type { ProfileItem } from '@/types';
+export const CHART_SECTION_DEFAULT_HEIGHT = 400;
 
 export const MENU_PROFILE: ProfileItem[] = [
   {

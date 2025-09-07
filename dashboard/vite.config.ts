@@ -13,8 +13,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          react: ['react', 'react-dom'],
-          mui: ['@mui/material', '@mui/icons-material'],
           echarts: ['echarts', 'echarts-for-react'],
         },
       },

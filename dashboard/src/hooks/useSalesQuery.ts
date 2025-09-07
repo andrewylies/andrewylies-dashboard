@@ -10,5 +10,9 @@ export const useSalesQuery = () =>
   useQuery<Sales[]>({
     queryKey: ['sales'],
     queryFn: fetchSales,
-    refetchInterval: Infinity,
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
   });

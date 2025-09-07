@@ -5,7 +5,7 @@ import { useNavigate } from '@tanstack/react-router';
 import type { DashboardSearch } from '@/types';
 import { memo, useCallback, useMemo } from 'react';
 import { formatDateYMD } from '@/lib';
-import { CHART_SECTION_DEFAULT_HEIGHT } from '@/constants/layout.tsx';
+import { CHART_SECTION_DEFAULT_HEIGHT } from '@/constants';
 
 type Props = {
   option?: EChartsOption;

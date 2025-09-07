@@ -11,7 +11,7 @@ import {
   PieModeToggle,
   type PieMode,
 } from '@/components/charts/Section/PieModeToggleSection';
-import { CHART_SECTION_DEFAULT_HEIGHT } from '@/constants/layout';
+import { CHART_SECTION_DEFAULT_HEIGHT } from '@/constants';
 
 export const Dashboard = () => {
   const search: DashboardSearch = useSearch({ from: '/' });
