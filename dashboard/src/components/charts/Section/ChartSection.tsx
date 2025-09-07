@@ -100,23 +100,32 @@ export const ChartSection = memo(
             height,
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'center',
+            justifyContent: 'space-between',
             alignItems: 'center',
             px: 5,
+            py: 2,
           }}
         >
-          <Skeleton
-            width={170}
-            variant="text"
-            animation={'wave'}
-            sx={{ fontSize: '1rem' }}
-          />
-          <Skeleton
-            width={200}
-            variant="text"
-            animation={'wave'}
-            sx={{ fontSize: '1rem', mb: 2 }}
-          />
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Skeleton
+              width={170}
+              variant="text"
+              animation={'wave'}
+              sx={{ fontSize: '1rem' }}
+            />
+            <Skeleton
+              width={200}
+              variant="text"
+              animation={'wave'}
+              sx={{ fontSize: '1rem' }}
+            />
+          </Box>
           <Skeleton
             variant="rounded"
             width={'100%'}
