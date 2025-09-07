@@ -19,7 +19,7 @@ export const sortSalesByDate = <T extends { salesDate: string }>(
  * @param target 비교할 날짜 문자열
  * @returns 인덱스
  */
-export const lowerBound = (dates: readonly string[], target: string) => {
+export const dateLowerBound = (dates: readonly string[], target: string) => {
   let l = 0,
     r = dates.length;
   while (l < r) {
@@ -36,7 +36,7 @@ export const lowerBound = (dates: readonly string[], target: string) => {
  * @param target 비교할 날짜 문자열
  * @returns 인덱스
  */
-export const upperBound = (dates: readonly string[], target: string) => {
+export const dateUpperBound = (dates: readonly string[], target: string) => {
   let l = 0,
     r = dates.length;
   while (l < r) {
@@ -65,8 +65,8 @@ export const sliceByDate = <T extends { salesDate: string }>(
   if (!start && !end) return sorted;
   const s = start ?? '0001-01-01';
   const e = end ?? '9999-12-31';
-  const i = lowerBound(dates, s);
-  const j = upperBound(dates, e);
+  const i = dateLowerBound(dates, s);
+  const j = dateUpperBound(dates, e);
   return sorted.slice(i, j);
 };
 

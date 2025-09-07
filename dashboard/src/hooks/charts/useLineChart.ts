@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
 import type { EChartsOption } from 'echarts';
 import type { Sales } from '@/types/api/sales';
-import { sortSalesByDate, sliceByDate } from '@/lib/time';
 import { niceCeil } from '@/lib/format';
 import { makeSalesLineOption } from '@/constants/charts/line';
-import type { ChartCommon } from './common';
+import { lowerBound, upperBound } from '@/lib';
 
 export type UseLineChartResult = {
   lineOption?: EChartsOption;
@@ -15,7 +14,7 @@ export type UseLineChartResult = {
 };
 
 /**
- * 라인 차트 옵션을 생성하는 훅
+ * 라인 차트 옵션을 생성하는 훅 (이진탐색 기반 범위 슬라이스)
  */
 export const useLineChart = ({
   sales,
@@ -23,12 +22,48 @@ export const useLineChart = ({
   end,
   candidates,
   getVal,
-}: Pick<
-  ChartCommon,
-  'sales' | 'start' | 'end' | 'candidates' | 'getVal'
->): UseLineChartResult => {
+}: {
+  sales: Sales[];
+  start: string;
+  end: string;
+  candidates?: Set<number>;
+  getVal: (s: Sales) => number;
+}): UseLineChartResult => {
+  // 1) 정렬 + 타임스탬프 준비 (한 번만)
+  const prepared = useMemo(() => {
+    if (sales.length === 0) {
+      return {
+        rows: [] as Array<Sales & { __ts: number }>,
+        ts: [] as number[],
+      };
+    }
+    const rows: Array<Sales & { __ts: number }> = sales.map((s) => ({
+      ...s,
+      __ts: new Date(s.salesDate).getTime(),
+    }));
+    rows.sort((a, b) => a.__ts - b.__ts);
+    const ts = rows.map((r) => r.__ts);
+    return { rows, ts };
+  }, [sales]);
+
+  // 2) 문자열 경계를 숫자(ms)로
+  const { startTs, endTs } = useMemo(() => {
+    const s = start ? new Date(start).getTime() : Number.NEGATIVE_INFINITY;
+    const e = end ? new Date(end).getTime() : Number.POSITIVE_INFINITY;
+    return { startTs: s, endTs: e };
+  }, [start, end]);
+
+  // 3) 이진탐색으로 슬라이스 인덱스 결정
+  const [lo, hi] = useMemo<[number, number]>(() => {
+    if (prepared.ts.length === 0) return [0, 0];
+    const l = lowerBound(prepared.ts, startTs);
+    const r = upperBound(prepared.ts, endTs);
+    return [l, r];
+  }, [prepared.ts, startTs, endTs]);
+
+  // 4) 합산/최대값 계산
   const { dateList, valueList, baselineValueList, yMax } = useMemo(() => {
-    if (!sales.length) {
+    if (hi <= lo) {
       return {
         dateList: [],
         valueList: [],
@@ -37,16 +72,15 @@ export const useLineChart = ({
       };
     }
 
-    const { sorted, dates } = sortSalesByDate<Sales>(sales);
-    const sliced = sliceByDate<Sales>(sorted, dates, start, end);
+    const ranged = prepared.rows.slice(lo, hi);
 
     const baseMap = new Map<string, number>();
     const filtMap = new Map<string, number>();
     let maxY = 0;
     const useFilter = !!candidates;
 
-    for (let i = 0; i < sliced.length; i++) {
-      const row = sliced[i];
+    for (let i = 0; i < ranged.length; i++) {
+      const row = ranged[i];
       const key = row.salesDate;
       const val = getVal(row);
 
@@ -69,8 +103,9 @@ export const useLineChart = ({
       baselineValueList: useFilter ? baseline : undefined,
       yMax: niceCeil(maxY),
     };
-  }, [sales, start, end, candidates, getVal]);
+  }, [prepared.rows, lo, hi, candidates, getVal]);
 
+  // 5) 차트 옵션
   const lineOption: EChartsOption | undefined = useMemo(() => {
     if (dateList.length === 0) return undefined;
     return makeSalesLineOption({

@@ -1,5 +1,29 @@
 import type { DashboardSearch, FilterKey } from '@/types';
 
+/** 오름차순 정렬된 numbers에서 target 이상이 처음 나오는 인덱스 */
+export const lowerBound = (arr: readonly number[], target: number): number => {
+  let lo = 0,
+    hi = arr.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >>> 1;
+    if (arr[mid] < target) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo;
+};
+
+/** 오름차순 정렬된 numbers에서 target 초과가 처음 나오는 인덱스 */
+export const upperBound = (arr: readonly number[], target: number): number => {
+  let lo = 0,
+    hi = arr.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >>> 1;
+    if (arr[mid] <= target) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo;
+};
+
 /**
  * 두 Set의 교집합을 구한다.
  * - 성능 최적화를 위해 작은 Set 먼저 순회.
