@@ -18,6 +18,8 @@ import { FilterModal } from '@/components/filter/FilterModal.tsx';
 import { PlatformQuickSwitch } from '@/components/filter/FilterPlatformSwitch.tsx';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { PAGE_TEXT } from '@/constants';
+import dayjs from 'dayjs';
+import { useSalesQuery } from '@/hooks/useSalesQuery';
 
 const CartBadge = styled(Badge)`
   & .${badgeClasses.badge} {
@@ -83,6 +85,13 @@ export const FilterSearchBar = () => {
     });
   }, [router, search.platform]);
 
+  const { dataUpdatedAt, isFetching } = useSalesQuery();
+  const lastUpdated = useMemo(
+    () =>
+      dataUpdatedAt ? dayjs(dataUpdatedAt).format('YYYY-MM-DD HH:mm:ss') : '—',
+    [dataUpdatedAt]
+  );
+
   return (
     <>
       <Grid container spacing={2}>
@@ -108,70 +117,90 @@ export const FilterSearchBar = () => {
           sx={{
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'space-between',
             gap: 2,
             flexWrap: 'wrap',
           }}
         >
-          {/* 필터 버튼 */}
-          <Button
-            variant="outlined"
-            onClick={openModal}
-            sx={{ whiteSpace: 'nowrap', fontWeight: 700 }}
-            color="primary"
-            startIcon={<TuneIcon fontSize="small" />}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              flexWrap: 'wrap',
+            }}
           >
-            {PAGE_TEXT.DASHBOARD.BUTTON.FILTER}
-            <CartBadge
-              badgeContent={chips.length}
+            {/* 필터 버튼 */}
+            <Button
+              variant="outlined"
+              onClick={openModal}
+              sx={{ whiteSpace: 'nowrap', fontWeight: 700 }}
               color="primary"
-              overlap="circular"
-            />
-          </Button>
-
-          {/* 캡슐 */}
-          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-            <AnimatePresence initial={false}>
-              {chips.map((c) => (
-                <MotionBox
-                  key={`${c.key}`}
-                  layout
-                  initial={init}
-                  animate={anim}
-                  exit={exit}
-                  transition={MOTION_TRANSITION}
-                >
-                  <Chip
-                    label={c.label}
-                    onDelete={c.onDelete}
-                    variant="outlined"
-                    color="primary"
-                    sx={{ borderRadius: 999 }}
-                  />
-                </MotionBox>
-              ))}
-
-              {chips.length > 0 && (
-                <MotionBox
-                  key="__clear-all__"
-                  layout
-                  initial={init}
-                  animate={anim}
-                  exit={exit}
-                  transition={MOTION_TRANSITION}
-                >
-                  <Button
-                    variant="text"
-                    size="small"
-                    color="primary"
-                    onClick={clearAll}
-                    sx={{ textTransform: 'none', fontWeight: 700 }}
+              startIcon={<TuneIcon fontSize="small" />}
+            >
+              {PAGE_TEXT.DASHBOARD.BUTTON.FILTER}
+              <CartBadge
+                badgeContent={chips.length}
+                color="primary"
+                overlap="circular"
+              />
+            </Button>
+            {/* 캡슐 */}
+            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+              <AnimatePresence initial={false}>
+                {chips.map((c) => (
+                  <MotionBox
+                    key={`${c.key}`}
+                    layout
+                    initial={init}
+                    animate={anim}
+                    exit={exit}
+                    transition={MOTION_TRANSITION}
                   >
-                    {PAGE_TEXT.DASHBOARD.BUTTON.CLEAR_ALL}
-                  </Button>
-                </MotionBox>
-              )}
-            </AnimatePresence>
-          </Stack>
+                    <Chip
+                      label={c.label}
+                      onDelete={c.onDelete}
+                      variant="outlined"
+                      color="primary"
+                      sx={{ borderRadius: 999 }}
+                    />
+                  </MotionBox>
+                ))}
+
+                {chips.length > 0 && (
+                  <MotionBox
+                    key="__clear-all__"
+                    layout
+                    initial={init}
+                    animate={anim}
+                    exit={exit}
+                    transition={MOTION_TRANSITION}
+                  >
+                    <Button
+                      variant="text"
+                      size="small"
+                      color="primary"
+                      onClick={clearAll}
+                      sx={{ textTransform: 'none', fontWeight: 700 }}
+                    >
+                      {PAGE_TEXT.DASHBOARD.BUTTON.CLEAR_ALL}
+                    </Button>
+                  </MotionBox>
+                )}
+              </AnimatePresence>
+            </Stack>
+          </Box>
+          <Box sx={{ whiteSpace: 'nowrap', opacity: 0.5 }}>
+            <Typography
+              variant="overline"
+              color="text.secondary"
+              fontWeight={600}
+            >
+              {isFetching
+                ? PAGE_TEXT.DASHBOARD.STATUS.SYNCING
+                : PAGE_TEXT.DASHBOARD.STATUS.UPDATED_AT(lastUpdated)}
+            </Typography>
+          </Box>
         </Grid>
       </Grid>
 

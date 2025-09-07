@@ -92,5 +92,9 @@ export const PAGE_TEXT = {
       FILTER: 'Filter',
       CLEAR_ALL: 'Clear All',
     },
+    STATUS: {
+      SYNCING: 'Syncing data…',
+      UPDATED_AT: (time: string) => `Last updated: ${time}`, // "Updated:" 대신 심플한 "Last update •"
+    },
   },
 };
