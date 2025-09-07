@@ -11,7 +11,7 @@ export const PRESET_RANGES = [
     label: PAGE_TEXT.DASHBOARD.FILTER.DAYS.SEVEN_DAYS,
     get: () => {
       const end = dayjs();
-      const start = end.subtract(6, 'day'); // 오늘 포함 7일
+      const start = end.subtract(6, 'day');
       return {
         start: start.format(DATE_FORMAT),
         end: end.format(DATE_FORMAT),

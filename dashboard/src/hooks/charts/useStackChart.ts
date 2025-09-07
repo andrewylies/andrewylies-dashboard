@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import type { EChartsOption } from 'echarts';
 import type { Sales } from '@/types/api/sales';
-import type { Product } from '@/types/api/products';
 import { sortSalesByDate, sliceByDate } from '@/lib/time';
 import { niceCeil } from '@/lib/format';
 import { makeSalesStackOption } from '@/constants/charts/stack';
@@ -16,6 +15,9 @@ export type UseStackChartResult = {
   stackXMax: number;
 };
 
+/**
+ * 스택 차트 옵션을 생성하는 훅
+ */
 export const useStackChart = ({
   sales,
   products,
@@ -39,7 +41,7 @@ export const useStackChart = ({
       }
 
       const meta = new Map<number, { publisher: string; category: string }>();
-      for (const p of products as Product[]) {
+      for (const p of products) {
         meta.set(p.productId, {
           publisher: p.publisher ?? '기타',
           category: p.category ?? '기타',

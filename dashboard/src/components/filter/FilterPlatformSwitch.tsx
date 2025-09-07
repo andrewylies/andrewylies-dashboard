@@ -9,11 +9,11 @@ import * as React from 'react';
 import { PAGE_TEXT } from '@/constants';
 
 type Platform = 'web' | 'app' | undefined;
-type UIValue = '' | 'web' | 'app'; // '' = 전체
+type UIValue = '' | 'web' | 'app';
 
 export const PlatformQuickSwitch = memo(() => {
   const navigate = useNavigate();
-  const search = useSearch({ from: '/' }) as DashboardSearch;
+  const search = useSearch({ from: '/' });
 
   const platform: Platform =
     search.platform === 'web' || search.platform === 'app'
@@ -23,7 +23,7 @@ export const PlatformQuickSwitch = memo(() => {
 
   const handleChange = useCallback(
     (_e: React.MouseEvent<HTMLElement>, next: UIValue | null) => {
-      const nextUi: UIValue = next ?? ''; // null 해제 시 '' = 전체
+      const nextUi: UIValue = next ?? '';
 
       void navigate({
         from: '/',

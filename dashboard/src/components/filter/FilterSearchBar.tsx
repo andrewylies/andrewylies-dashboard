@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import TuneIcon from '@mui/icons-material/Tune';
 import { useRouter, useSearch } from '@tanstack/react-router';
-import type { DashboardSearch, FilterKey } from '@/types';
+import type { DashboardSearch } from '@/types';
 import { summarizeCsv, buildDateChip, buildMultiChips } from '@/lib';
 import { FilterModal } from '@/components/filter/FilterModal.tsx';
 import { PlatformQuickSwitch } from '@/components/filter/FilterPlatformSwitch.tsx';
@@ -34,7 +34,7 @@ const MOTION_EXIT = { opacity: 0, scale: 0.8 } as const;
 
 export const FilterSearchBar = () => {
   const router = useRouter();
-  const search = useSearch({ from: '/' }) as DashboardSearch;
+  const search = useSearch({ from: '/' });
   const [open, setOpen] = useState(false);
 
   const prefersReduced = useReducedMotion();
@@ -68,7 +68,7 @@ export const FilterSearchBar = () => {
                 to: '/',
                 search: (prev: DashboardSearch) => ({
                   ...prev,
-                  [c.key as Exclude<FilterKey, 'date'>]: undefined,
+                  [c.key]: undefined,
                 }),
               }),
     }));

@@ -10,15 +10,10 @@ import { CHART_SECTION_DEFAULT_HEIGHT } from '@/constants/layout.tsx';
 type Props = {
   option?: EChartsOption;
   type: 'line' | 'bar' | 'pie';
-  /** 차트 상단 우측에 표시될 컨트롤(토글/버튼 등) */
   toolbar?: React.ReactNode;
-  /** toolbar 내용이 바뀔 때 리렌더를 보장하기 위한 키 (옵션) */
   toolbarKey?: string;
-  /** 차트 높이(px) */
   height?: number;
-  /** 로딩 상태: true면 차트 대신 스켈레톤 렌더 */
   isPending?: boolean;
-
   hidden?: boolean;
 };
 
@@ -119,6 +114,7 @@ export const ChartSection = memo(
               alignItems: 'center',
             }}
           >
+            {/* 차트 스켈레톤 */}
             <Skeleton
               width={170}
               variant="text"
@@ -142,7 +138,6 @@ export const ChartSection = memo(
       );
     }
 
-    // 데이터 없음이면 렌더 스킵
     if (!option) return null;
 
     return (

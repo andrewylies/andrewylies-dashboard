@@ -157,10 +157,3 @@ const mapCsv = (csv: string, dict: Record<string, string>) =>
     .filter(Boolean)
     .map((s) => dict[s] ?? s)
     .join(', ');
-
-/**
- * (멀티필터) 전체와 동일하면 undefined(= 쿼리 제거), 아니면 CSV 반환
- * @param st { isAll: boolean; set: Set<string> }
- * @param universe Set<string>
- * @param toCsv (Set<string>) => string | undefined
- */

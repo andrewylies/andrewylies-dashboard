@@ -23,6 +23,9 @@ export type ChartCommon = {
   getVal: (s: Sales) => number;
 };
 
+/**
+ * 공통 차트 훅
+ */
 export const useChartCommon = (search: DashboardSearch): ChartCommon => {
   const {
     data: sales = [],
@@ -85,7 +88,7 @@ export const useChartCommon = (search: DashboardSearch): ChartCommon => {
     return { byPublisher, byGenre, byStatus, byCategory, byTag };
   }, [products]);
 
-  // 플랫폼 accessor
+  // 플랫폼
   const platform =
     search.platform === 'web' || search.platform === 'app'
       ? search.platform

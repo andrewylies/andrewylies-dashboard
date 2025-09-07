@@ -97,6 +97,9 @@ const matchPresetKey = (
   return hit?.key ?? null;
 };
 
+/**
+ * 필터 모달 열림/닫힘 상태 관리 훅
+ */
 export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
   const router = useRouter();
   const search = useSearch({ from: '/' });
@@ -275,7 +278,6 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
     const s = date.start ? date.start.format(DATE_FORMAT) : undefined;
     const e = date.end ? date.end.format(DATE_FORMAT) : undefined;
 
-    // 🔒 멀티 필터를 부분 객체로 먼저 구성
     const multiPatch: Partial<Record<FilterKey, string | undefined>> = {};
     MULTI_KEYS.forEach((k) => {
       multiPatch[k] = toCsvIfPartial(multi[k], allSets[k]);

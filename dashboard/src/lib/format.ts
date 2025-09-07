@@ -1,43 +1,4 @@
 /**
- * CSV 문자열을 배열로 변환.
- * - 공백 제거, 빈 값 제거
- * - unique 옵션으로 중복 제거 가능(기본 true)
- * @param v 입력값(unknown 허용)
- * @param unique 중복 제거 여부 (기본: true)
- * @returns string[] (없으면 빈 배열)
- */
-export const parseCsv = (v: unknown, unique: boolean = true): string[] => {
-  if (typeof v !== 'string') return [];
-  const parts = v
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
-  if (!parts.length) return [];
-  if (!unique) return parts;
-  return Array.from(new Set(parts));
-};
-
-/**
- * 값 배열을 "a, b, c" 형태로 요약.
- * - 최대 maxShow개만 노출하고 나머지는 "외 N"으로 합산.
- * - 값이 없으면 빈 문자열.
- * @param values 표시할 값들
- * @param maxShow 최대 노출 개수(기본 3)
- * @returns 예: "A, B, C 외 2"
- */
-export const summarizeValues = (
-  values: readonly string[],
-  maxShow: number = 3
-): string => {
-  const len = values.length;
-  if (len === 0) return '';
-  if (len <= maxShow) return values.join(', ');
-  const head = values.slice(0, maxShow).join(', ');
-  const rest = len - maxShow;
-  return `${head} 외 ${rest}`;
-};
-
-/**
  * YYYY-MM-DD 같은 문자열만 허용.
  * - 정규식 /^\d{4}-\d{2}-\d{2}$/ 로 기본적인 패턴만 검증.
  * - 유효하지 않은 날짜(예: 2025-13-40)는 통과할 수 있으므로,
@@ -96,6 +57,20 @@ export const csvToSet = (csv?: string): Set<string> | undefined => {
   }
   return set.size ? set : undefined;
 };
+
+/**
+ * Set<string> → CSV
+ * - 빈 Set이면 undefined 반환(쿼리 제거용)
+ * - 정렬 안정화
+ * @param set 집합
+ */
+export const setToCsv = (set: Set<string>) => {
+  if (!set.size) return undefined;
+  return Array.from(set)
+    .sort((a, b) => a.localeCompare(b))
+    .join(',');
+};
+
 export const csvToSetFiltered = (csv?: string) => {
   if (!csv) return new Set<string>();
   return new Set(
@@ -126,19 +101,6 @@ export const summarizeCsv = (label: string, csv: string): string => {
   if (arr.length === 1) return `${label}: ${arr[0]}`;
   if (arr.length === 2) return `${label}: ${arr[0]}, ${arr[1]}`;
   return `${label}: ${arr[0]}, ${arr[1]} 외 ${arr.length - 2}`;
-};
-
-/**
- * Set<string> → CSV
- * - 빈 Set이면 undefined 반환(쿼리 제거용)
- * - 정렬 안정화
- * @param set 집합
- */
-export const setToCsv = (set: Set<string>) => {
-  if (!set.size) return undefined;
-  return Array.from(set)
-    .sort((a, b) => a.localeCompare(b))
-    .join(',');
 };
 
 /** 1/2/5 스텝 올림 라운딩 (축 max 계산용) */
@@ -178,7 +140,3 @@ export const formatKRWShort = (value: number, withSymbol = true) => {
   const formatted = unit.v % 1 === 0 ? unit.v.toString() : unit.v.toFixed(1);
   return `${sign}${withSymbol ? '₩' : ''}${formatted}${unit.s}`;
 };
-
-/** 일반 숫자 ₩3,210 형식 */
-export const formatKRW = (value: number) =>
-  `₩${Math.round(value).toLocaleString()}`;

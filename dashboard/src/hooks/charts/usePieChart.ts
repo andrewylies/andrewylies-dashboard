@@ -13,6 +13,9 @@ export type PieOptions = {
   count?: EChartsOption;
 };
 
+/**
+ * 원형 차트 옵션을 생성하는 훅
+ */
 export const usePieChart = ({
   sales,
   products,
@@ -47,8 +50,7 @@ export const usePieChart = ({
     const genreCount = new Map<string, number>();
     {
       const pool =
-        candidates ??
-        new Set<number>((products as Product[]).map((p) => p.productId));
+        candidates ?? new Set<number>(products.map((p) => p.productId));
       for (const id of pool) {
         const g = productIdToGenre.get(id) ?? '기타';
         genreCount.set(g, (genreCount.get(g) ?? 0) + 1);

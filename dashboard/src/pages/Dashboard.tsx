@@ -14,15 +14,12 @@ import {
 import { CHART_SECTION_DEFAULT_HEIGHT } from '@/constants/layout';
 
 export const Dashboard = () => {
-  // 1) 검색 파라미터 딜레이 적용
   const search: DashboardSearch = useSearch({ from: '/' });
   const deferredSearch = useDeferredValue(search);
 
-  // 2) 차트 데이터 훅
   const { lineOption, stackOption, pieOption, isPending } =
     useChartData(deferredSearch);
 
-  // 3) 파이 모드(매출/작품수) 상태
   const [pieMode, setPieMode] = useState<PieMode>('sales');
   const currentPie = useMemo(
     () => (pieMode === 'sales' ? pieOption.sales : pieOption.count),
@@ -45,7 +42,6 @@ export const Dashboard = () => {
     [pieMode, pieDisabled]
   );
 
-  // 4) 결과 없음 표시 조건(로딩이 끝났고, 라인/스택 둘 중 하나라도 없음)
   const hasData = !!(lineOption && stackOption);
   const showEmpty = !isPending && !hasData;
 

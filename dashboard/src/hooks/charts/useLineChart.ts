@@ -14,6 +14,9 @@ export type UseLineChartResult = {
   yMax: number;
 };
 
+/**
+ * 라인 차트 옵션을 생성하는 훅
+ */
 export const useLineChart = ({
   sales,
   start,

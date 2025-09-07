@@ -73,15 +73,14 @@ export const makeSalesLineOption = ({
         axisTick: { show: false },
         data: dateList,
         axisLabel: {
-          // YYYY-MM-DD -> MM/DD
-          formatter: ((val) => {
+          formatter: (val) => {
             if (val.length >= 10) {
               const mm = val.slice(5, 7);
               const dd = val.slice(8, 10);
               return `${mm}/${dd}`;
             }
             return String(val);
-          }) as (value: string, index: number) => string,
+          },
         },
       },
     ],
@@ -95,15 +94,10 @@ export const makeSalesLineOption = ({
         axisLine: { show: false },
         splitLine: { show: true },
         axisLabel: {
-          formatter: ((val: number) =>
-            formatKRWShort(Number(val ?? 0), false)) as (
-            value: number,
-            index: number
-          ) => string,
+          formatter: (val: number) => formatKRWShort(Number(val ?? 0), false),
         },
       },
     ],
-
     series,
     progressive: 1000,
     progressiveThreshold: 2000,

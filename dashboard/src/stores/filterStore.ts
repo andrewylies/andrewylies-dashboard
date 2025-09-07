@@ -21,10 +21,7 @@ const toOptions = (
 };
 
 const emptyOptions = (): Record<FilterKey, FilterOption[]> =>
-  Object.fromEntries(MULTI_KEYS.map((k) => [k, [ALL]])) as Record<
-    FilterKey,
-    FilterOption[]
-  >;
+  Object.fromEntries(MULTI_KEYS.map((k) => [k, [ALL]]));
 
 type OptionsMap = Record<FilterKey, FilterOption[]>;
 
