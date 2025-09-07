@@ -21,7 +21,9 @@ export function NotFound({ data }: NotFoundRouteProps) {
       }}
     >
       <Box>
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Box
+          sx={{ display: 'flex', justifyContent: 'center', height: '276px' }}
+        >
           <DotLottieReact
             src="https://lottie.host/648f0176-f3f9-4518-8cb3-e92ee7f2ce06/kyXdc7UwDv.lottie"
             autoplay
