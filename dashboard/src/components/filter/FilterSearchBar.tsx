@@ -96,30 +96,47 @@ export const FilterSearchBar = () => {
 
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid container spacing={5}>
         <Grid size={{ xs: 12 }}>
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
+              position: 'relative',
             }}
           >
-            <Typography variant="h5" fontWeight="bolder">
+            <Typography
+              variant="h5"
+              fontWeight="bolder"
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+              }}
+            >
               {PAGE_TEXT.DASHBOARD.TITLE}
             </Typography>
 
             {/* 플랫폼 버튼 */}
             <PlatformQuickSwitch />
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={600}
+              sx={{ position: 'absolute', left: 2, bottom: -17, opacity: 0.5 }}
+            >
+              {isFetching
+                ? PAGE_TEXT.DASHBOARD.STATUS.SYNCING
+                : PAGE_TEXT.DASHBOARD.STATUS.UPDATED_AT(lastUpdated)}
+            </Typography>
           </Box>
         </Grid>
-
         <Grid
           size={{ xs: 12 }}
           sx={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
             gap: 2,
             flexWrap: 'wrap',
           }}
@@ -128,27 +145,32 @@ export const FilterSearchBar = () => {
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 2,
               flexWrap: 'wrap',
             }}
           >
-            {/* 필터 버튼 */}
-            <Button
-              variant="outlined"
-              onClick={openModal}
-              sx={{ whiteSpace: 'nowrap', fontWeight: 700 }}
-              color="primary"
-              startIcon={<TuneIcon fontSize="small" />}
-            >
-              {PAGE_TEXT.DASHBOARD.BUTTON.FILTER}
-              <CartBadge
-                badgeContent={chips.length}
-                color="primary"
-                overlap="circular"
-              />
-            </Button>
             {/* 캡슐 */}
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            <Stack
+              direction="row"
+              spacing={1}
+              flexWrap="wrap"
+              useFlexGap
+              alignItems={'center'}
+            >
+              {/* 필터 버튼 */}
+              <Button
+                variant="outlined"
+                onClick={openModal}
+                sx={{ whiteSpace: 'wrap', fontWeight: 700, mr: 1 }}
+                color="primary"
+                startIcon={<TuneIcon fontSize="small" />}
+              >
+                {PAGE_TEXT.DASHBOARD.BUTTON.FILTER}
+                <CartBadge
+                  badgeContent={chips.length}
+                  color="primary"
+                  overlap="circular"
+                />
+              </Button>
               <AnimatePresence initial={false}>
                 {chips.map((c) => (
                   <MotionBox
@@ -191,17 +213,6 @@ export const FilterSearchBar = () => {
                 )}
               </AnimatePresence>
             </Stack>
-          </Box>
-          <Box sx={{ whiteSpace: 'nowrap', opacity: 0.5 }}>
-            <Typography
-              variant="overline"
-              color="text.secondary"
-              fontWeight={600}
-            >
-              {isFetching
-                ? PAGE_TEXT.DASHBOARD.STATUS.SYNCING
-                : PAGE_TEXT.DASHBOARD.STATUS.UPDATED_AT(lastUpdated)}
-            </Typography>
           </Box>
         </Grid>
       </Grid>
