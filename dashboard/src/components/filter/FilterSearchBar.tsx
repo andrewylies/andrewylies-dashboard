@@ -58,6 +58,7 @@ export const FilterSearchBar = () => {
         c.key === 'date'
           ? () =>
               void router.navigate({
+                replace: true,
                 to: '/',
                 search: (prev: DashboardSearch) => ({
                   ...prev,
@@ -68,6 +69,7 @@ export const FilterSearchBar = () => {
           : () =>
               void router.navigate({
                 to: '/',
+                replace: true,
                 search: (prev: DashboardSearch) => ({
                   ...prev,
                   [c.key]: undefined,
