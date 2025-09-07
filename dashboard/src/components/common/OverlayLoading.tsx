@@ -1,10 +1,15 @@
 import { Backdrop, CircularProgress, Box, Typography } from '@mui/material';
+import { PAGE_TEXT } from '@/constants';
 
 export const OverlayLoading = () => {
   return (
     <Backdrop
       open
-      sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+      sx={(theme) => ({
+        color: theme.palette.primary.main,
+        zIndex: theme.zIndex.drawer + 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+      })}
     >
       <Box
         sx={{
@@ -17,8 +22,8 @@ export const OverlayLoading = () => {
         }}
       >
         <CircularProgress size={60} color="inherit" />
-        <Typography sx={{ mt: 2, color: 'white' }}>
-          데이터 불러오는 중...
+        <Typography sx={{ mt: 2, color: 'inherit' }}>
+          {PAGE_TEXT.LOADING}
         </Typography>
       </Box>
     </Backdrop>

@@ -51,9 +51,20 @@ export const CHART_TEXT = {
       SUB_TITLE: 'Top 10 publishers by sales, stacked by category',
     },
   },
+  PIE: {
+    TEXT: {
+      TITLE: 'Genre Distribution',
+      SUB_TITLE: 'Switch between sales share and title share by genre',
+    },
+    TOOLTIP: {
+      SALES: 'Sales Share',
+      COUNT: 'Title Share',
+    },
+  },
 };
 
 export const PAGE_TEXT = {
+  LOADING: 'Fetching secrets from the database…',
   DASHBOARD: {
     TITLE: 'Overview',
     PLATFORM: {
