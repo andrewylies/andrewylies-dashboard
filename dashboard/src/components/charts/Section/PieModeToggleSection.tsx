@@ -14,7 +14,7 @@ type Props = {
 
 export const PieModeToggle = memo(({ mode, onChange, disabled }: Props) => {
   return (
-    <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+    <Stack direction="row" spacing={1}>
       <Tooltip title={CHART_TEXT.PIE.TOOLTIP.SALES}>
         <span>
           <IconButton

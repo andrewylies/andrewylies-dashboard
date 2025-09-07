@@ -64,29 +64,32 @@ export const Dashboard = () => {
       )}
 
       {/* 라인 차트 */}
-      <Grid size={{ xs: 12 }} aria-hidden={showEmpty}>
+      <Grid size={{ xs: 12 }}>
         <ChartSection
           option={lineOption}
           type="line"
           isPending={isPending}
+          hidden={showEmpty}
           height={CHART_SECTION_DEFAULT_HEIGHT}
         />
       </Grid>
 
       {/* 스택/파이 차트(반응형 2열) */}
-      <Grid size={{ xs: 12, md: 6 }} aria-hidden={showEmpty}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <ChartSection
           option={stackOption}
           type="bar"
           isPending={isPending}
+          hidden={showEmpty}
           height={CHART_SECTION_DEFAULT_HEIGHT}
         />
       </Grid>
-      <Grid size={{ xs: 12, md: 6 }} aria-hidden={showEmpty}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <ChartSection
           option={currentPie}
           type="pie"
           isPending={isPending}
+          hidden={showEmpty}
           height={CHART_SECTION_DEFAULT_HEIGHT}
           toolbar={pieToolbar}
           toolbarKey={pieMode}

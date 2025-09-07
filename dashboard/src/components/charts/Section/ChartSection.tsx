@@ -18,6 +18,8 @@ type Props = {
   height?: number;
   /** 로딩 상태: true면 차트 대신 스켈레톤 렌더 */
   isPending?: boolean;
+
+  hidden?: boolean;
 };
 
 const ECHARTS_STYLE = { height: '100%' } as const;
@@ -27,6 +29,7 @@ const areEqual = (prev: Props, next: Props) =>
   prev.option === next.option &&
   prev.height === next.height &&
   prev.isPending === next.isPending &&
+  prev.hidden === next.hidden &&
   (prev.toolbarKey ?? null) === (next.toolbarKey ?? null);
 
 export const ChartSection = memo(
@@ -37,6 +40,7 @@ export const ChartSection = memo(
     toolbarKey,
     height = CHART_SECTION_DEFAULT_HEIGHT,
     isPending = false,
+    hidden = false,
   }: Props) => {
     const muiTheme = useTheme();
     const mode = muiTheme.palette.mode;
@@ -91,6 +95,8 @@ export const ChartSection = memo(
     );
 
     const onEvents = useMemo(() => ({ click: handleClick }), [handleClick]);
+
+    if (hidden) return null;
 
     if (isPending) {
       return (
@@ -152,7 +158,7 @@ export const ChartSection = memo(
               top: 0,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'flex-end',
+              justifyContent: 'center',
               gap: 1,
               zIndex: 1,
             }}

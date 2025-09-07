@@ -22,12 +22,14 @@ export const FilterNoResult = memo(() => {
         justifyContent: 'center',
         textAlign: 'center',
         display: 'flex',
-        minHeight: '60vh',
+        minHeight: '50vh',
         mt: 10,
       }}
     >
       <Box>
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Box
+          sx={{ display: 'flex', justifyContent: 'center', height: '275.41px' }}
+        >
           <StaticLottie />
         </Box>
 
