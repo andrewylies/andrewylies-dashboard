@@ -128,6 +128,6 @@ export const PAGE_TEXT = {
     },
   },
   TABLE: {
-    TITLE: 'Products Overview',
+    TITLE: 'Products Overview (Filtered)',
   },
 };

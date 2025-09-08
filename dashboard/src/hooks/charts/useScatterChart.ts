@@ -3,7 +3,8 @@ import type { EChartsOption } from 'echarts';
 import type { Sales } from '@/types/api/sales';
 import type { Product } from '@/types/api/products';
 import { makeSalesScatterOption } from '@/constants/charts';
-import { lowerBound, tsOf, upperBound } from '@/lib';
+import { lowerBound, upperBound } from '@/lib';
+import dayjs from 'dayjs';
 
 type Props = {
   sales: ReadonlyArray<Sales>;
@@ -33,7 +34,7 @@ export function useScatterChart({
     }
     const rows: Array<Sales & { __ts: number }> = sales.map((s) => ({
       ...s,
-      __ts: tsOf(s.salesDate),
+      __ts: dayjs(s.salesDate).valueOf(),
     }));
     rows.sort((a, b) => a.__ts - b.__ts);
     const ts = rows.map((r) => r.__ts);
@@ -43,8 +44,8 @@ export function useScatterChart({
   // (2) 구간 경계
   const [lo, hi] = useMemo<[number, number]>(() => {
     if (prepared.ts.length === 0) return [0, 0];
-    const startTs = start ? tsOf(start) : Number.NEGATIVE_INFINITY;
-    const endTs = end ? tsOf(end) : Number.POSITIVE_INFINITY;
+    const startTs = start ? dayjs(start).valueOf() : Number.NEGATIVE_INFINITY;
+    const endTs = end ? dayjs(end).valueOf() : Number.POSITIVE_INFINITY;
     return [lowerBound(prepared.ts, startTs), upperBound(prepared.ts, endTs)];
   }, [prepared.ts, start, end]);
 

@@ -19,7 +19,7 @@ export const LOW_CONV_MIN_READ = 10000;
 // Low conversion 전환 상한
 export const LOW_CONV_MAX_RATIO = 0.025;
 
-export const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+export const RECENT_DAYS = 30;
 
 export const TABLE_COL = {
   THUMB: { HEADER: 'Thumb', MIN_WIDTH: 80 },

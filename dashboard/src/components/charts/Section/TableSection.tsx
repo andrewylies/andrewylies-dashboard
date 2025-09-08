@@ -23,7 +23,6 @@ import {
   TABLE_SECTION_DEFAULT_HEIGHT,
   PAGE_TEXT,
   TOP_PERCENTILE,
-  THIRTY_DAYS_MS,
   APP_HEAVY_MIN,
   WEB_HEAVY_MAX,
   VIRAL_MIN_READ,
@@ -33,6 +32,7 @@ import {
   BADGE_LABELS,
   type BadgeName,
   TABLE_COL,
+  RECENT_DAYS,
 } from '@/constants';
 import type { ChartProps } from '@/types';
 
@@ -44,7 +44,6 @@ import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import NewReleasesIcon from '@mui/icons-material/NewReleases';
 import dayjs from 'dayjs';
 import { useProductsQuery } from '@/hooks/useProductsQuery.ts';
-import { tsOf } from '@/lib';
 
 type Row = {
   id: number;
@@ -74,8 +73,8 @@ export function TableSection({ common }: { common: ChartProps }) {
   const { sales, products, start, end, candidates, getVal, isPending } = common;
 
   const { startTs, endTs } = useMemo(() => {
-    const s = start ? tsOf(start) : Number.NEGATIVE_INFINITY;
-    const e = end ? tsOf(end) : Number.POSITIVE_INFINITY;
+    const s = start ? dayjs(start).valueOf() : Number.NEGATIVE_INFINITY;
+    const e = end ? dayjs(end).valueOf() : Number.POSITIVE_INFINITY;
     return { startTs: s, endTs: e };
   }, [start, end]);
 
@@ -102,7 +101,7 @@ export function TableSection({ common }: { common: ChartProps }) {
 
     for (let i = 0; i < sales.length; i++) {
       const row: Sales = sales[i];
-      const ts = tsOf(row.salesDate);
+      const ts = dayjs(row.salesDate).valueOf();
       if (ts < startTs || ts > endTs) continue;
       if (productAllow && !productAllow.has(row.productId)) continue;
 
@@ -128,10 +127,11 @@ export function TableSection({ common }: { common: ChartProps }) {
       slot.users.webPaid += row.webPaidUser;
 
       // 일별 전환 관측
-      const d = slot.daily.get(row.salesDate) ?? { read: 0, paid: 0 };
+      const dayKey = dayjs(row.salesDate).format('YYYY-MM-DD');
+      const d = slot.daily.get(dayKey) ?? { read: 0, paid: 0 };
       d.read += row.totalReadUser;
       d.paid += row.totalPaidUser;
-      slot.daily.set(row.salesDate, d);
+      slot.daily.set(dayKey, d);
     }
 
     return map;
@@ -153,8 +153,6 @@ export function TableSection({ common }: { common: ChartProps }) {
       topThreshold = sorted[idx];
     }
 
-    const now = Date.now();
-
     // 배지 생성
     const makeBadges = (p: Product): readonly BadgeName[] => {
       const agg = aggByProduct.get(p.productId) ?? {
@@ -171,8 +169,10 @@ export function TableSection({ common }: { common: ChartProps }) {
       }
 
       // New (최근 30일)
-      const startedTs = p.startedSaleAt ? tsOf(p.startedSaleAt) : 0;
-      if (startedTs && now - startedTs < THIRTY_DAYS_MS) {
+      if (
+        p.startedSaleAt &&
+        dayjs().diff(dayjs(p.startedSaleAt), 'day') < RECENT_DAYS
+      ) {
         out.push(BADGE_LABELS.NEW);
       }
 

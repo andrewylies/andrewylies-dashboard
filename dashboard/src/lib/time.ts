@@ -82,7 +82,3 @@ import dayjs from 'dayjs';
 export const formatDateYMD = (input?: dayjs.ConfigType): string => {
   return dayjs(input).format('YYYY-MM-DD');
 };
-
-export const tsOf = (ymd: string): number => {
-  return new Date(ymd).getTime();
-};
