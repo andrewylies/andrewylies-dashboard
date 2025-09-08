@@ -61,7 +61,13 @@ type Row = {
   badges: readonly BadgeName[];
 };
 
-export function TableSection({ common }: { common: ChartProps }) {
+export function TableSection({
+  common,
+  hidden = false,
+}: {
+  common: ChartProps;
+  hidden?: boolean;
+}) {
   const theme = useTheme();
   const { dataUpdatedAt, isFetching } = useProductsQuery();
   const lastUpdated = useMemo(
@@ -476,7 +482,7 @@ export function TableSection({ common }: { common: ChartProps }) {
       >
         <DataGrid
           loading={isPending}
-          rows={isPending ? [] : rows}
+          rows={isPending || hidden ? [] : rows}
           columns={columns}
           initialState={{
             sorting: { sortModel: [{ field: 'salesTotal', sort: 'desc' }] },

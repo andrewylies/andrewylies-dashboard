@@ -110,7 +110,7 @@ export const Dashboard = () => {
         <Box sx={{ mt: 3 }} />
       </Grid>
       <Grid size={{ xs: 12 }}>
-        <TableSection common={common} />
+        <TableSection common={common} hidden={showEmpty} />
       </Grid>
     </Grid>
   );
