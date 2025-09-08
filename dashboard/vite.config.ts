@@ -12,8 +12,14 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          echarts: ['echarts', 'echarts-for-react'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('echarts')) return 'echarts';
+            if (id.includes('echarts-for-react')) return 'echarts';
+            if (id.includes('@mui')) return 'mui';
+            if (id.includes('@tanstack')) return 'tanstack';
+            if (id.includes('dayjs')) return 'dayjs';
+          }
         },
       },
     },
