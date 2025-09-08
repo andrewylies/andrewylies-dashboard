@@ -1,5 +1,11 @@
 import { memo, useCallback } from 'react';
-import { Divider, Paper, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import {
+  Divider,
+  Paper,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+} from '@mui/material';
 import ComputerIcon from '@mui/icons-material/Computer';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import SegmentIcon from '@mui/icons-material/Segment';
@@ -50,44 +56,47 @@ export const PlatformQuickSwitch = memo(() => {
         onChange={handleChange}
         color={'primary'}
       >
-        <ToggleButton
-          value=""
-          sx={{
-            border: 'none',
-            borderRadius: '4px!important',
-            display: 'flex',
-            gap: 0.5,
-          }}
-        >
-          <SegmentIcon fontSize="small" />
-          {PAGE_TEXT.DASHBOARD.PLATFORM.ALL}
-        </ToggleButton>
+        <Tooltip title={PAGE_TEXT.DASHBOARD.PLATFORM.ALL}>
+          <ToggleButton
+            value=""
+            sx={{
+              border: 'none',
+              borderRadius: '4px!important',
+              display: 'flex',
+              gap: 0.5,
+            }}
+          >
+            <SegmentIcon fontSize="small" />
+          </ToggleButton>
+        </Tooltip>
         <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
-        <ToggleButton
-          value="app"
-          sx={{
-            border: 'none',
-            borderRadius: '4px!important',
-            display: 'flex',
-            gap: 0.5,
-          }}
-        >
-          <PhoneIphoneIcon fontSize="small" />
-          {PAGE_TEXT.DASHBOARD.PLATFORM.APP}
-        </ToggleButton>
+        <Tooltip title={PAGE_TEXT.DASHBOARD.PLATFORM.APP}>
+          <ToggleButton
+            value="app"
+            sx={{
+              border: 'none',
+              borderRadius: '4px!important',
+              display: 'flex',
+              gap: 0.5,
+            }}
+          >
+            <PhoneIphoneIcon fontSize="small" />
+          </ToggleButton>
+        </Tooltip>
         <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
-        <ToggleButton
-          value="web"
-          sx={{
-            border: 'none',
-            borderRadius: '4px!important',
-            display: 'flex',
-            gap: 0.5,
-          }}
-        >
-          <ComputerIcon fontSize="small" />
-          {PAGE_TEXT.DASHBOARD.PLATFORM.WEB}
-        </ToggleButton>
+        <Tooltip title={PAGE_TEXT.DASHBOARD.PLATFORM.WEB}>
+          <ToggleButton
+            value="web"
+            sx={{
+              border: 'none',
+              borderRadius: '4px!important',
+              display: 'flex',
+              gap: 0.5,
+            }}
+          >
+            <ComputerIcon fontSize="small" />
+          </ToggleButton>
+        </Tooltip>
       </ToggleButtonGroup>
     </Paper>
   );

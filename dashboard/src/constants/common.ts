@@ -80,9 +80,9 @@ export const PAGE_TEXT = {
   DASHBOARD: {
     TITLE: 'Sales Overview',
     PLATFORM: {
-      ALL: 'Total',
-      APP: 'App',
-      WEB: 'Web',
+      ALL: 'View Total Sales',
+      APP: 'View App Sales Only',
+      WEB: 'View Web Sales Only',
     },
     FILTER: {
       PERIOD: {

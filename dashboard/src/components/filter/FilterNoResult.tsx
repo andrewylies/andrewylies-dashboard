@@ -22,8 +22,8 @@ export const FilterNoResult = memo(() => {
         justifyContent: 'center',
         textAlign: 'center',
         display: 'flex',
-        minHeight: '50vh',
         mt: 10,
+        mb: 10,
       }}
     >
       <Box>
