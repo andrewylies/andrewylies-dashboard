@@ -53,11 +53,11 @@ export const useStackChart = ({
         });
       }
 
-      // 날짜 정렬 및 구간 슬라이스 (기존 유틸 유지)
+      // 날짜 정렬 및 구간 슬라이스
       const { sorted, dates } = sortSalesByDate<Sales>(sales);
       const sliced = sliceByDate<Sales>(sorted, dates, start, end);
 
-      // 집계: publisher → (category → value)
+      // 집계
       const agg = new Map<string, Map<string, number>>();
       const cats = new Set<string>();
       const useFilter = !!candidates;
@@ -91,10 +91,9 @@ export const useStackChart = ({
         };
       }
 
-      // 스택(열) = 카테고리(여기선 작품 카테고리)
       const stackStacks = Array.from(cats.values()).sort();
 
-      // 퍼블리셔별 합산 후 상위 N개 선택 (기존 정렬 방향 유지)
+      // 퍼블리셔별 합산 후 상위 N개 선택
       const totals: Array<{ pub: string; total: number }> = [];
       for (const [pub, catMap] of agg) {
         let sum = 0;
@@ -106,7 +105,6 @@ export const useStackChart = ({
       const top = totals.slice(0, STACK_Y_AXIS_MAX_LENGTH);
       const stackCategories = top.map((t) => t.pub);
 
-      // 매트릭스 [stack(si)][category(ci)]
       const stackMatrix: number[][] = stackStacks.map(() =>
         new Array(stackCategories.length).fill(0)
       );

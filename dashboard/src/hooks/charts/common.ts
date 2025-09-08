@@ -42,7 +42,7 @@ export const useChartCommon = (search: DashboardSearch): ChartCommon => {
     throw notFound({ data: ERROR_CODES.SERVER_ERROR, throw: true });
   }
 
-  // 기간 확정 (dayjs)
+  // 기간 확정
   const { start, end } = useMemo(() => {
     if (search.start && search.end)
       return { start: search.start, end: search.end };
@@ -99,7 +99,7 @@ export const useChartCommon = (search: DashboardSearch): ChartCommon => {
     return (s: Sales) => s.totalSales;
   }, [platform]);
 
-  // 제품 후보 (다중 필터 후보)
+  // 제품 후보
   const candidates: Set<number> | undefined = useMemo(() => {
     if (!indexBundle) return undefined;
     return makeCandidates(search, indexBundle);

@@ -17,6 +17,5 @@ export const STATUS_LABELS: Record<string, string> = {
 export const STACK_Y_AXIS_MAX_LENGTH: number = 10;
 
 export const MULTI_KEYS: string[] = Object.keys(FILTER_LABELS);
-export const FILTER_KEYS: string[] = Object.keys(FILTER_LABELS);
 
 export const ALL: FilterOption = { value: 'all', label: 'All' };

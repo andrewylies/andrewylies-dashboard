@@ -57,7 +57,7 @@ export const usePieChart = ({
   candidates,
   getVal,
 }: Props) => {
-  // 정렬 + 타임스탬프 배열 (1회)
+  // 정렬 + 타임스탬프 배열
   const prepared = useMemo(() => {
     if (sales.length === 0) {
       return {
@@ -81,7 +81,7 @@ export const usePieChart = ({
     return { startTs: s, endTs: e };
   }, [start, end]);
 
-  // 이진탐색으로 구간 추출
+  // 구간 추출
   const [lo, hi] = useMemo<[number, number]>(() => {
     if (prepared.ts.length === 0) return [0, 0];
     const l = lowerBound(prepared.ts, startTs);
@@ -89,14 +89,13 @@ export const usePieChart = ({
     return [l, r];
   }, [prepared.ts, startTs, endTs]);
 
-  // productId -> genre 매핑 (고정)
+  // productId -> genre 매핑
   const productGenre = useMemo(() => {
     const map = new Map<number, string>();
     for (const p of products) map.set(p.productId, p.genre ?? 'Unknown');
     return map;
   }, [products]);
 
-  // ✅ 단일 패스 집계: 장르별 매출 합, 건수 합
   const { labelsSales, valuesSales, labelsCount, valuesCount } = useMemo(() => {
     if (hi <= lo) {
       return {
@@ -122,7 +121,7 @@ export const usePieChart = ({
       countByGenre.set(genre, (countByGenre.get(genre) ?? 0) + 1);
     }
 
-    // label 정렬(안정적인 렌더링 순서)
+    // label 정렬
     const labelsSales = Array.from(salesByGenre.keys()).sort();
     const valuesSales = labelsSales.map((g) => salesByGenre.get(g) ?? 0);
 
@@ -132,7 +131,7 @@ export const usePieChart = ({
     return { labelsSales, valuesSales, labelsCount, valuesCount };
   }, [prepared.rows, lo, hi, candidates, productGenre, getVal]);
 
-  // 옵션 생성: 데이터만 주입, 나머지는 상수화된 베이스 재사용
+  // 옵션 생성
   const pieOption = useMemo<{
     sales?: EChartsOption;
     count?: EChartsOption;

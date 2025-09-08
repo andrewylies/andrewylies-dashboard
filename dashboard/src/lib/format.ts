@@ -110,10 +110,9 @@ export const niceCeil = (
 ): number => {
   if (v <= 0) return 1;
 
-  const p = Math.pow(10, Math.floor(Math.log10(v))); // scale factor
+  const p = Math.pow(10, Math.floor(Math.log10(v)));
   const n = v / p;
 
-  // steps 배열에서 n 이상인 첫 번째 step 선택
   let step = steps[steps.length - 1];
   for (const s of steps) {
     if (n <= s) {
