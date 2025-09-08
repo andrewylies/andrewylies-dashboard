@@ -17,7 +17,11 @@ import { PAGE_TEXT } from '@/constants';
 type Platform = 'web' | 'app' | undefined;
 type UIValue = '' | 'web' | 'app';
 
-export const PlatformQuickSwitch = memo(() => {
+type Props = {
+  isFloating?: boolean;
+};
+
+export const PlatformQuickSwitch = memo(({ isFloating = false }: Props) => {
   const navigate = useNavigate();
   const search = useSearch({ from: '/' });
 
@@ -55,46 +59,60 @@ export const PlatformQuickSwitch = memo(() => {
         exclusive
         onChange={handleChange}
         color={'primary'}
+        orientation={isFloating ? 'vertical' : 'horizontal'}
       >
-        <Tooltip title={PAGE_TEXT.DASHBOARD.PLATFORM.ALL}>
+        <Tooltip
+          title={PAGE_TEXT.DASHBOARD.PLATFORM.ALL}
+          disableHoverListener={isFloating}
+        >
           <ToggleButton
             value=""
             sx={{
-              border: 'none',
-              borderRadius: '4px!important',
+              border: isFloating ? '' : 'none',
+              borderRadius: isFloating ? 'inherit' : '4px!important',
               display: 'flex',
               gap: 0.5,
             }}
           >
-            <SegmentIcon fontSize="small" />
+            <SegmentIcon />
           </ToggleButton>
         </Tooltip>
-        <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
-        <Tooltip title={PAGE_TEXT.DASHBOARD.PLATFORM.APP}>
+        {!isFloating && (
+          <Divider flexItem orientation={'vertical'} sx={{ mx: 0.5, my: 1 }} />
+        )}
+        <Tooltip
+          title={PAGE_TEXT.DASHBOARD.PLATFORM.APP}
+          disableHoverListener={isFloating}
+        >
           <ToggleButton
             value="app"
             sx={{
-              border: 'none',
-              borderRadius: '4px!important',
+              border: isFloating ? '' : 'none',
+              borderRadius: isFloating ? 'inherit' : '4px!important',
               display: 'flex',
               gap: 0.5,
             }}
           >
-            <PhoneIphoneIcon fontSize="small" />
+            <PhoneIphoneIcon />
           </ToggleButton>
         </Tooltip>
-        <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
-        <Tooltip title={PAGE_TEXT.DASHBOARD.PLATFORM.WEB}>
+        {!isFloating && (
+          <Divider flexItem orientation={'vertical'} sx={{ mx: 0.5, my: 1 }} />
+        )}
+        <Tooltip
+          title={PAGE_TEXT.DASHBOARD.PLATFORM.WEB}
+          disableHoverListener={isFloating}
+        >
           <ToggleButton
             value="web"
             sx={{
-              border: 'none',
-              borderRadius: '4px!important',
+              border: isFloating ? '' : 'none',
+              borderRadius: isFloating ? 'inherit' : '4px!important',
               display: 'flex',
               gap: 0.5,
             }}
           >
-            <ComputerIcon fontSize="small" />
+            <ComputerIcon />
           </ToggleButton>
         </Tooltip>
       </ToggleButtonGroup>

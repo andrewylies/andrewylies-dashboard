@@ -112,7 +112,7 @@ export const niceCeil = (v: number): number => {
   return step * p;
 };
 /** ₩ 통화 축약: 천/만/억 (소수 1자리, .0 제거) */
-export const formatKRWShort = (value: number, withSymbol = true) => {
+export const formatKRWShort = (value: number, withSymbol = false) => {
   const abs = Math.abs(value);
   const sign = value < 0 ? '-' : '';
   const unit =
@@ -124,6 +124,6 @@ export const formatKRWShort = (value: number, withSymbol = true) => {
           ? { v: abs / 1_000, s: 'K' }
           : { v: abs, s: '' };
 
-  const formatted = unit.v % 1 === 0 ? unit.v.toString() : unit.v.toFixed(1);
+  const formatted = unit.v % 1 === 0 ? unit.v.toString() : unit.v.toFixed(0);
   return `${sign}${withSymbol ? '₩' : ''}${formatted}${unit.s}`;
 };

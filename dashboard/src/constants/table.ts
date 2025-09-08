@@ -28,8 +28,11 @@ export const TABLE_COL = {
   GENRE: { HEADER: 'Genre', MIN_WIDTH: 100 },
   CAT: { HEADER: 'Category', MIN_WIDTH: 120 },
   STATUS: { HEADER: 'Status', MIN_WIDTH: 120 },
-  TAGS: { HEADER: 'Tags', MIN_WIDTH: 220 },
-  SALES: { HEADER: 'Sales(₩)', MIN_WIDTH: 150 },
+  TAGS: { HEADER: 'Tags', MIN_WIDTH: 240 },
+  SALES: {
+    HEADER: 'Sales(₩)',
+    MIN_WIDTH: 150,
+  },
   BADGES: { HEADER: 'Badges', MIN_WIDTH: 120 },
 } as const;
 

@@ -18,8 +18,14 @@ export const Dashboard = () => {
   const search: DashboardSearch = useSearch({ from: '/' });
   const deferredSearch = useDeferredValue(search);
 
-  const { lineOption, stackOption, pieOption, isPending, common } =
-    useExportChartData(deferredSearch);
+  const {
+    lineOption,
+    stackOption,
+    pieOption,
+    scatterOption,
+    isPending,
+    common,
+  } = useExportChartData(deferredSearch);
 
   const [pieMode, setPieMode] = useState<PieMode>('sales');
   const currentPie = useMemo(
@@ -72,7 +78,7 @@ export const Dashboard = () => {
       </Grid>
 
       {/* 스택/파이 차트(반응형 2열) */}
-      <Grid size={{ xs: 12, md: 6 }}>
+      <Grid size={{ xs: 12, md: 4 }}>
         <ChartSection
           option={stackOption}
           type="bar"
@@ -81,7 +87,7 @@ export const Dashboard = () => {
           height={CHART_SECTION_DEFAULT_HEIGHT}
         />
       </Grid>
-      <Grid size={{ xs: 12, md: 6 }}>
+      <Grid size={{ xs: 12, md: 4 }}>
         <ChartSection
           option={currentPie}
           type="pie"
@@ -90,6 +96,15 @@ export const Dashboard = () => {
           height={CHART_SECTION_DEFAULT_HEIGHT}
           toolbar={pieToolbar}
           toolbarKey={pieMode}
+        />
+      </Grid>
+      <Grid size={{ xs: 12, md: 4 }}>
+        <ChartSection
+          option={scatterOption}
+          type="scatter"
+          isPending={isPending}
+          hidden={showEmpty}
+          height={CHART_SECTION_DEFAULT_HEIGHT}
         />
       </Grid>
       <Grid size={{ xs: 12 }}>

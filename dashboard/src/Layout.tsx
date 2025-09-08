@@ -26,6 +26,8 @@ import { FilterInitializer } from '@/components/filter/FilterInitializer.tsx';
 import { LogoIcon } from '@/components/icon/logo.tsx';
 import type { ProfileKey } from '@/types';
 import { Footer } from '@/components/common/Footer.tsx';
+import { ScrollTop } from '@/components/common/ScrollTop.tsx';
+import { PlatformQuickSwitch } from '@/components/filter/FilterPlatformSwitch.tsx';
 
 export const Layout = () => {
   const theme = createTheme({
@@ -145,12 +147,15 @@ export const Layout = () => {
           </Toolbar>
         </Container>
       </AppBar>
-      <Box sx={theme.mixins.toolbar} />
+      <Toolbar />
       <Container maxWidth="xl" sx={{ height: '100%' }}>
         <FilterInitializer />
         <Outlet />
         <Footer />
       </Container>
+      <ScrollTop>
+        <PlatformQuickSwitch isFloating />
+      </ScrollTop>
     </ThemeProvider>
   );
 };

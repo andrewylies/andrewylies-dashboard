@@ -35,10 +35,10 @@ export const FilterNoResult = memo(() => {
 
         <Box sx={{ mt: 4 }}>
           <Typography variant="h3" fontWeight={700} gutterBottom>
-            {ERROR_CODES.NO_SALES.title}
+            {ERROR_CODES.NO_SALES.TITLE}
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
-            {ERROR_CODES.NO_SALES.message}
+            {ERROR_CODES.NO_SALES.MESSAGE}
           </Typography>
         </Box>
       </Box>

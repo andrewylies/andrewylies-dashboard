@@ -17,24 +17,24 @@ export const MENU_PROFILE: ProfileItem[] = [
 ];
 
 export const ERROR_MESSAGE = {
-  filter: {
-    start: 'Start date must not be later than end date.',
-    end: 'End date must not be earlier than start date.',
+  FILTER: {
+    START: 'Start date must not be later than end date.',
+    END: 'End date must not be earlier than start date.',
   },
 };
 
 export const ERROR_CODES = {
   NOT_FOUND: {
-    title: 'Page Not Found',
-    message: 'The page you are looking for does not exist.',
+    TITLE: 'Page Not Found',
+    MESSAGE: 'The page you are looking for does not exist.',
   },
   SERVER_ERROR: {
-    title: 'Server Error',
-    message: 'A server error has occurred. Please try again later.',
+    TITLE: 'Server Error',
+    MESSAGE: 'A server error has occurred. Please try again later.',
   },
   NO_SALES: {
-    title: 'No Data Available',
-    message: 'No sales records match the applied filters.',
+    TITLE: 'No Data Available',
+    MESSAGE: 'No sales records match the applied filters.',
   },
 };
 
@@ -48,11 +48,17 @@ export const CHART_TEXT = {
       ALL: 'Total Sales',
       FILTERED: 'Filtered Sales',
     },
+    AXIS: {
+      Y: '(₩)',
+    },
   },
   STACKED_BAR: {
     TEXT: {
       TITLE: 'Sales by Publisher & Category',
       SUB_TITLE: 'Top 10 publishers by sales, stacked by category',
+    },
+    AXIS: {
+      Y: '(₩)',
     },
   },
   PIE: {
@@ -64,6 +70,21 @@ export const CHART_TEXT = {
       SALES: 'Sales Share',
       COUNT: 'Title Share',
     },
+  },
+  SCATTER: {
+    TEXT: {
+      TITLE: 'Sales Conversion Scatter',
+      SUB_TITLE: 'Compare viewers and purchasers by title',
+    },
+    AXIS: {
+      X: 'Viewers',
+      Y: 'Purchasers',
+    },
+    VISUAL: {
+      HIGH: 'High Sales',
+      LOW: 'Low Sales',
+    },
+    SERIES: 'Sales',
   },
   FALLBACK: {
     GENRE: 'Unclassified',

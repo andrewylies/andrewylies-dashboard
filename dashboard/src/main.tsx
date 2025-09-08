@@ -1,10 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+// import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from '@tanstack/react-router';
 import { router } from './router';
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+
 const client = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
@@ -12,12 +13,12 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={client}>
       <RouterProvider router={router} />
 
-      {import.meta.env.DEV && (
-        <>
-          <ReactQueryDevtools initialIsOpen={false} />
-          <TanStackRouterDevtools router={router} />
-        </>
-      )}
+      {/*{import.meta.env.DEV && (*/}
+      {/*  <>*/}
+      {/*    <ReactQueryDevtools initialIsOpen={false} />*/}
+      {/*    <TanStackRouterDevtools router={router} />*/}
+      {/*  </>*/}
+      {/*)}*/}
     </QueryClientProvider>
   </StrictMode>
 );

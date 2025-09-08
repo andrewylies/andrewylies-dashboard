@@ -71,6 +71,8 @@ export type UseChartDataResult = {
     count?: EChartsOption;
   };
 
+  scatterOption?: EChartsOption;
+
   /** 날짜 문자열 리스트 (x축용) */
   dateList: string[];
 

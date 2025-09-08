@@ -9,7 +9,7 @@ import { CHART_SECTION_DEFAULT_HEIGHT } from '@/constants';
 
 type Props = {
   option?: EChartsOption;
-  type: 'line' | 'bar' | 'pie';
+  type: 'line' | 'bar' | 'pie' | 'scatter';
   toolbar?: React.ReactNode;
   toolbarKey?: string;
   height?: number;

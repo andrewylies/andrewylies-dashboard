@@ -32,10 +32,10 @@ export function NotFound({ data }: NotFoundRouteProps) {
 
         <Box sx={{ mt: 4 }}>
           <Typography variant="h3" fontWeight={700} gutterBottom>
-            {error?.title ? error.title : ERROR_CODES.NOT_FOUND.title}
+            {error?.title ? error.title : ERROR_CODES.NOT_FOUND.TITLE}
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
-            {error?.message ?? ERROR_CODES.NOT_FOUND.message}
+            {error?.message ?? ERROR_CODES.NOT_FOUND.MESSAGE}
           </Typography>
 
           <Button

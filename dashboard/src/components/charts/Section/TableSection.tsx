@@ -44,6 +44,7 @@ import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import NewReleasesIcon from '@mui/icons-material/NewReleases';
 import dayjs from 'dayjs';
 import { useProductsQuery } from '@/hooks/useProductsQuery.ts';
+import { tsOf } from '@/lib';
 
 type Row = {
   id: number;
@@ -60,10 +61,6 @@ type Row = {
   startedSaleAt: string;
   badges: readonly BadgeName[];
 };
-
-function tsOf(ymd: string): number {
-  return new Date(ymd).getTime();
-}
 
 export function TableSection({ common }: { common: ChartProps }) {
   const theme = useTheme();
@@ -444,7 +441,7 @@ export function TableSection({ common }: { common: ChartProps }) {
   );
 
   return (
-    <Grid container spacing={5}>
+    <Grid container spacing={4}>
       <Box sx={{ position: 'relative' }}>
         <Typography
           variant="h5"

@@ -87,7 +87,7 @@ export const makeSalesLineOption = ({
 
     yAxis: [
       {
-        name: '(₩)',
+        name: CHART_TEXT.LINE.AXIS.Y,
         type: 'value',
         min: 0,
         max: yMax,

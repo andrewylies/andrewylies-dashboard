@@ -62,12 +62,12 @@ export const makeSalesStackOption = ({
       right: 15,
     },
     xAxis: {
-      name: '(₩)',
+      name: CHART_TEXT.STACKED_BAR.AXIS.Y,
       type: 'value',
       min: 0,
       max: xMax,
       axisLabel: {
-        formatter: (val: number) => formatKRWShort(Number(val ?? 0), false),
+        formatter: (val: number) => formatKRWShort(Number(val ?? 0)),
       },
       splitLine: { show: true },
     },

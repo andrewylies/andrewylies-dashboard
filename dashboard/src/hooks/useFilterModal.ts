@@ -242,11 +242,11 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
   const reversed = bothFilled ? date.end!.isBefore(date.start!, 'day') : false;
   const startErrorMsg =
     bothFilled && reversed && date.lastEdited === 'start'
-      ? ERROR_MESSAGE.filter.start
+      ? ERROR_MESSAGE.FILTER.START
       : undefined;
   const endErrorMsg =
     bothFilled && reversed && date.lastEdited === 'end'
-      ? ERROR_MESSAGE.filter.end
+      ? ERROR_MESSAGE.FILTER.END
       : undefined;
   const hasDateError = reversed;
 
