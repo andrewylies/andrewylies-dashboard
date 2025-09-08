@@ -484,11 +484,11 @@ export function TableSection({ common }: { common: ChartProps }) {
           }}
           pageSizeOptions={[25, 50, 100]}
           disableRowSelectionOnClick
-          checkboxSelection={false}
           density="compact"
-          sx={{ '& .MuiDataGrid-columnHeaders': { borderRadius: 1 } }}
         />
       </Box>
     </Grid>
   );
 }
+
+export default TableSection;

@@ -187,3 +187,5 @@ export const ChartSection = memo(
 );
 
 ChartSection.displayName = 'ChartSection';
+
+export default ChartSection;

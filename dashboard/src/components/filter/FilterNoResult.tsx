@@ -1,11 +1,12 @@
 import { Box, Container, Typography } from '@mui/material';
-import Lottie from 'lottie-react';
 import { ERROR_CODES } from '@/constants';
-import { memo } from 'react';
+import { lazy, memo } from 'react';
 import noResultJson from '@/assets/lottie/noresult.json';
 
+const Lottie = lazy(() => import('react-lottie-player'));
+
 const StaticLottie = memo(() => (
-  <Lottie animationData={noResultJson} loop autoplay />
+  <Lottie animationData={noResultJson} loop play />
 ));
 StaticLottie.displayName = 'StaticLottie';
 

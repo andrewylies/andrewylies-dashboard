@@ -7,7 +7,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      'lottie-web/build/player/lottie': 'lottie-web/build/player/lottie_light',
     },
   },
   build: {
@@ -15,18 +14,11 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('echarts') || id.includes('echarts-for-react')) {
-              return 'echarts';
-            }
-            if (id.includes('@mui')) {
-              return 'mui';
-            }
-            if (id.includes('@tanstack')) {
-              return 'tanstack';
-            }
-            if (id.includes('dayjs')) {
-              return 'dayjs';
-            }
+            if (id.includes('echarts')) return 'echarts';
+            if (id.includes('echarts-for-react')) return 'echarts';
+            if (id.includes('@mui')) return 'mui';
+            if (id.includes('@tanstack')) return 'tanstack';
+            if (id.includes('dayjs')) return 'dayjs';
           }
         },
       },

@@ -2,9 +2,7 @@ import { useDeferredValue, useMemo, useState } from 'react';
 import { Box, Grid } from '@mui/material';
 import { useSearch } from '@tanstack/react-router';
 import type { DashboardSearch } from '@/types';
-
 import { FilterSearchBar } from '@/components/filter/FilterSearchBar';
-import { ChartSection } from '@/components/charts/Section/ChartSection';
 import { FilterNoResult } from '@/components/filter/FilterNoResult';
 import { useExportChartData } from '@/hooks/charts';
 import {
@@ -12,6 +10,7 @@ import {
   type PieMode,
 } from '@/components/charts/Section/PieModeToggleSection';
 import { CHART_SECTION_DEFAULT_HEIGHT } from '@/constants';
+import { ChartSection } from '@/components/charts/Section/ChartSection';
 import { TableSection } from '@/components/charts/Section/TableSection.tsx';
 
 export const Dashboard = () => {

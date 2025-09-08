@@ -3,8 +3,10 @@ import { ERROR_CODES } from '@/constants';
 import { Box, Button, Container, Typography } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import type { ErrorProps } from '@/types';
-import Lottie from 'lottie-react';
 import failJson from '@/assets/lottie/fail.json';
+import { lazy } from 'react';
+
+const Lottie = lazy(() => import('react-lottie-player'));
 
 export function NotFound({ data }: NotFoundRouteProps) {
   const error = data as ErrorProps;
@@ -25,7 +27,7 @@ export function NotFound({ data }: NotFoundRouteProps) {
         <Box
           sx={{ display: 'flex', justifyContent: 'center', height: '276px' }}
         >
-          <Lottie animationData={failJson} autoplay loop={false} />
+          <Lottie animationData={failJson} play loop={false} />
         </Box>
 
         <Box sx={{ mt: 4 }}>
