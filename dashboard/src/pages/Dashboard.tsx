@@ -47,7 +47,7 @@ export const Dashboard = () => {
   const showEmpty = !isPending && !hasData;
 
   return (
-    <Grid container spacing={1} sx={{ mt: 3, mb: 5 }}>
+    <Grid container spacing={1} sx={{ mt: 3, mb: 8 }}>
       {/* 검색/필터 바 */}
       <Grid size={{ xs: 12 }}>
         <FilterSearchBar />

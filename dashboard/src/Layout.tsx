@@ -25,6 +25,7 @@ import { MENU_PROFILE } from '@/constants';
 import { FilterInitializer } from '@/components/filter/FilterInitializer.tsx';
 import { LogoIcon } from '@/components/icon/logo.tsx';
 import type { ProfileKey } from '@/types';
+import { Footer } from '@/components/common/Footer.tsx';
 
 export const Layout = () => {
   const theme = createTheme({
@@ -148,6 +149,7 @@ export const Layout = () => {
       <Container maxWidth="xl" sx={{ height: '100%' }}>
         <FilterInitializer />
         <Outlet />
+        <Footer />
       </Container>
     </ThemeProvider>
   );

@@ -22,6 +22,17 @@ import {
   CHART_TEXT,
   TABLE_SECTION_DEFAULT_HEIGHT,
   PAGE_TEXT,
+  TOP_PERCENTILE,
+  THIRTY_DAYS_MS,
+  APP_HEAVY_MIN,
+  WEB_HEAVY_MAX,
+  VIRAL_MIN_READ,
+  VIRAL_MIN_RATIO,
+  LOW_CONV_MIN_READ,
+  LOW_CONV_MAX_RATIO,
+  BADGE_LABELS,
+  type BadgeName,
+  TABLE_COL,
 } from '@/constants';
 import type { ChartProps } from '@/types';
 
@@ -47,7 +58,7 @@ type Row = {
   appTotal: number;
   webTotal: number;
   startedSaleAt: string;
-  badges: readonly string[];
+  badges: readonly BadgeName[];
 };
 
 function tsOf(ymd: string): number {
@@ -76,7 +87,7 @@ export function TableSection({ common }: { common: ChartProps }) {
     return undefined;
   }, [candidates]);
 
-  // 제품별 집계: 매출 + 사용자(조회/구매) + 앱/웹 분해 + 일별 전환 확인을 위한 맵
+  // 제품별 집계
   const aggByProduct = useMemo(() => {
     const map = new Map<
       number,
@@ -108,12 +119,12 @@ export function TableSection({ common }: { common: ChartProps }) {
         map.set(row.productId, slot);
       }
 
-      // 매출 합산 (표시용)
+      // 매출 합산
       slot.sales.total += getVal(row);
       slot.sales.app += row.appSales;
       slot.sales.web += row.webSales;
 
-      // 사용자 합산 (전환 분석용)
+      // 사용자 합산
       slot.users.readTotal += row.totalReadUser;
       slot.users.paidTotal += row.totalPaidUser;
       slot.users.appPaid += row.appPaidUser;
@@ -134,64 +145,69 @@ export function TableSection({ common }: { common: ChartProps }) {
       ? products.filter((p) => productAllow.has(p.productId))
       : products;
 
-    // 상위 매출 기준(Top 1%) 임계 계산
+    // 상위 매출 기준(Top %) 임계 계산
     const totals = list.map(
       (p) => aggByProduct.get(p.productId)?.sales.total ?? 0
     );
-    const sortedTotals = [...totals].sort((a, b) => a - b);
-    const q90 =
-      sortedTotals.length > 0
-        ? sortedTotals[Math.max(0, Math.floor(sortedTotals.length * 0.99) - 1)]
-        : 0;
+    let topThreshold = 0;
+    if (totals.length > 0) {
+      const sorted = [...totals].sort((a, b) => a - b);
+      const idx = Math.max(0, Math.floor(sorted.length * TOP_PERCENTILE) - 1);
+      topThreshold = sorted[idx];
+    }
 
-    // 배지 생성 로직
-    const makeBadges = (p: Product): readonly string[] => {
+    const now = Date.now();
+
+    // 배지 생성
+    const makeBadges = (p: Product): readonly BadgeName[] => {
       const agg = aggByProduct.get(p.productId) ?? {
         sales: { total: 0, app: 0, web: 0 },
         users: { readTotal: 0, paidTotal: 0, appPaid: 0, webPaid: 0 },
         daily: new Map<string, { read: number; paid: number }>(),
       };
-      const out: string[] = [];
 
-      // 1) Top Seller (매출 기준 상위 분위)
-      if (agg.sales.total >= q90 && agg.sales.total > 0) {
-        out.push('Top Seller');
+      const out: BadgeName[] = [];
+
+      // Top Seller
+      if (agg.sales.total > 0 && agg.sales.total >= topThreshold) {
+        out.push(BADGE_LABELS.TOP_SELLER);
       }
 
-      // 2) New (최근 30일 내 출시)
+      // New (최근 30일)
       const startedTs = p.startedSaleAt ? tsOf(p.startedSaleAt) : 0;
-      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
-      if (startedTs && Date.now() - startedTs < THIRTY_DAYS) {
-        out.push('New');
+      if (startedTs && now - startedTs < THIRTY_DAYS_MS) {
+        out.push(BADGE_LABELS.NEW);
       }
 
-      // 3) App-heavy (이제 PaidUser 기준)
+      // App-heavy / Web-heavy (PaidUser 기준)
       const paidTotal = agg.users.paidTotal;
       if (paidTotal > 0) {
         const appPaidRatio = agg.users.appPaid / paidTotal;
-        if (appPaidRatio >= 0.6928) {
-          out.push('App-heavy');
-        } else if (appPaidRatio <= 0.675) {
-          out.push('Web-heavy');
+        if (appPaidRatio >= APP_HEAVY_MIN) {
+          out.push(BADGE_LABELS.APP_HEAVY);
+        } else if (appPaidRatio <= WEB_HEAVY_MAX) {
+          out.push(BADGE_LABELS.WEB_HEAVY);
         }
       }
 
-      // 4) Viral (하루 기준 paid/read >= 0.04인 날 존재 && 그날 read ≥ 4000)
+      // Viral (하루 기준)
       let hasViral = false;
       for (const v of agg.daily.values()) {
-        if (v.read >= 4000 && v.paid / Math.max(1, v.read) >= 0.04) {
+        const reads = v.read;
+        const conv = v.paid / (reads > 0 ? reads : 1);
+        if (reads >= VIRAL_MIN_READ && conv >= VIRAL_MIN_RATIO) {
           hasViral = true;
           break;
         }
       }
-      if (hasViral) out.push('Viral');
+      if (hasViral) out.push(BADGE_LABELS.VIRAL);
 
-      // 5) Low conversion (기간 전체 paid/read < 0.025 && 총 read ≥ 10000)
-      if (
-        agg.users.readTotal >= 10000 &&
-        agg.users.paidTotal / Math.max(1, agg.users.readTotal) < 0.025
-      ) {
-        out.push('Low conversion');
+      // Low conversion (기간 전체)
+      if (agg.users.readTotal >= LOW_CONV_MIN_READ) {
+        const convAll =
+          agg.users.paidTotal /
+          (agg.users.readTotal > 0 ? agg.users.readTotal : 1);
+        if (convAll < LOW_CONV_MAX_RATIO) out.push(BADGE_LABELS.LOW_CONVERSION);
       }
 
       return out;
@@ -201,7 +217,7 @@ export function TableSection({ common }: { common: ChartProps }) {
       const agg = aggByProduct.get(p.productId) ?? {
         sales: { total: 0, app: 0, web: 0 },
         users: { readTotal: 0, paidTotal: 0, appPaid: 0, webPaid: 0 },
-        daily: new Map<string, { read: number; paid: number }>(),
+        daily: new Map<string, { read: 0; paid: 0 }>(),
       };
       return {
         id: p.productId,
@@ -226,8 +242,8 @@ export function TableSection({ common }: { common: ChartProps }) {
     () => [
       {
         field: 'thumbPath',
-        headerName: 'Thumb',
-        width: 80,
+        headerName: TABLE_COL.THUMB.HEADER,
+        width: TABLE_COL.THUMB.MIN_WIDTH,
         sortable: false,
         filterable: false,
         align: 'center',
@@ -239,6 +255,8 @@ export function TableSection({ common }: { common: ChartProps }) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              width: '100%',
+              height: '100%',
             }}
           >
             <Avatar
@@ -250,14 +268,34 @@ export function TableSection({ common }: { common: ChartProps }) {
           </Box>
         ),
       },
-      { field: 'title', headerName: 'Title', minWidth: 280, flex: 1 },
-      { field: 'publisher', headerName: 'Publisher', minWidth: 100, flex: 0.6 },
-      { field: 'genre', headerName: 'Genre', minWidth: 100, flex: 0.5 },
-      { field: 'category', headerName: 'Category', minWidth: 120, flex: 0.5 },
+      {
+        field: 'title',
+        headerName: TABLE_COL.TITLE.HEADER,
+        minWidth: TABLE_COL.TITLE.MIN_WIDTH,
+        flex: 1,
+      },
+      {
+        field: 'publisher',
+        headerName: TABLE_COL.PUB.HEADER,
+        minWidth: TABLE_COL.PUB.MIN_WIDTH,
+        flex: 0.6,
+      },
+      {
+        field: 'genre',
+        headerName: TABLE_COL.GENRE.HEADER,
+        minWidth: TABLE_COL.GENRE.MIN_WIDTH,
+        flex: 0.5,
+      },
+      {
+        field: 'category',
+        headerName: TABLE_COL.CAT.HEADER,
+        minWidth: TABLE_COL.CAT.MIN_WIDTH,
+        flex: 0.5,
+      },
       {
         field: 'status',
-        headerName: 'Status',
-        minWidth: 120,
+        headerName: TABLE_COL.STATUS.HEADER,
+        minWidth: TABLE_COL.STATUS.MIN_WIDTH,
         sortable: false,
         renderCell: (params: GridRenderCellParams<Row, Row['status']>) => (
           <Chip
@@ -281,8 +319,8 @@ export function TableSection({ common }: { common: ChartProps }) {
       },
       {
         field: 'tags',
-        headerName: 'Tags',
-        minWidth: 220,
+        headerName: TABLE_COL.TAGS.HEADER,
+        minWidth: TABLE_COL.TAGS.MIN_WIDTH,
         flex: 1,
         sortable: false,
         renderCell: (params: GridRenderCellParams<Row, Row['tags']>) => {
@@ -311,22 +349,22 @@ export function TableSection({ common }: { common: ChartProps }) {
       },
       {
         field: 'salesTotal',
-        headerName: 'Sales(₩)',
+        headerName: TABLE_COL.SALES.HEADER,
         type: 'number',
-        minWidth: 150,
+        minWidth: TABLE_COL.SALES.MIN_WIDTH,
       },
       {
         field: 'badges',
-        headerName: 'Badges',
-        minWidth: 120,
+        headerName: TABLE_COL.BADGES.HEADER,
+        minWidth: TABLE_COL.BADGES.MIN_WIDTH,
         flex: 1,
         sortable: false,
         renderCell: (params: GridRenderCellParams<Row, Row['badges']>) => {
           const badges = params.value ?? [];
 
-          const renderBadgeAvatar = (note: string) => {
+          const renderBadgeAvatar = (note: BadgeName) => {
             switch (note) {
-              case 'Top Seller':
+              case BADGE_LABELS.TOP_SELLER:
                 return (
                   <Tooltip key={note} title={note} arrow>
                     <Avatar sx={{ bgcolor: theme.palette.warning.main }}>
@@ -334,7 +372,7 @@ export function TableSection({ common }: { common: ChartProps }) {
                     </Avatar>
                   </Tooltip>
                 );
-              case 'App-heavy':
+              case BADGE_LABELS.APP_HEAVY:
                 return (
                   <Tooltip key={note} title={note} arrow>
                     <Avatar sx={{ bgcolor: theme.palette.success.main }}>
@@ -342,7 +380,7 @@ export function TableSection({ common }: { common: ChartProps }) {
                     </Avatar>
                   </Tooltip>
                 );
-              case 'Web-heavy':
+              case BADGE_LABELS.WEB_HEAVY:
                 return (
                   <Tooltip key={note} title={note} arrow>
                     <Avatar sx={{ bgcolor: theme.palette.info.main }}>
@@ -350,7 +388,7 @@ export function TableSection({ common }: { common: ChartProps }) {
                     </Avatar>
                   </Tooltip>
                 );
-              case 'Viral':
+              case BADGE_LABELS.VIRAL:
                 return (
                   <Tooltip key={note} title={note} arrow>
                     <Avatar sx={{ bgcolor: theme.palette.secondary.main }}>
@@ -358,7 +396,7 @@ export function TableSection({ common }: { common: ChartProps }) {
                     </Avatar>
                   </Tooltip>
                 );
-              case 'Low conversion':
+              case BADGE_LABELS.LOW_CONVERSION:
                 return (
                   <Tooltip key={note} title={note} arrow>
                     <Avatar sx={{ bgcolor: theme.palette.error.main }}>
@@ -366,7 +404,7 @@ export function TableSection({ common }: { common: ChartProps }) {
                     </Avatar>
                   </Tooltip>
                 );
-              case 'New':
+              case BADGE_LABELS.NEW:
                 return (
                   <Tooltip key={note} title={note} arrow>
                     <Avatar sx={{ bgcolor: theme.palette.secondary.main }}>
@@ -390,13 +428,9 @@ export function TableSection({ common }: { common: ChartProps }) {
               }}
             >
               <AvatarGroup
-                spacing={'medium'}
+                spacing="medium"
                 sx={{
-                  '& .MuiAvatar-root': {
-                    width: 24,
-                    height: 24,
-                    fontSize: 14,
-                  },
+                  '& .MuiAvatar-root': { width: 24, height: 24, fontSize: 14 },
                 }}
               >
                 {badges.map(renderBadgeAvatar)}
@@ -434,6 +468,7 @@ export function TableSection({ common }: { common: ChartProps }) {
             : PAGE_TEXT.DASHBOARD.STATUS.UPDATED_AT(lastUpdated)}
         </Typography>
       </Box>
+
       <Box
         sx={{
           display: 'flex',
