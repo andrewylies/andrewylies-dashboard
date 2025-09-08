@@ -71,6 +71,7 @@ export type UseChartDataResult = {
     count?: EChartsOption;
   };
 
+  /** 분포 차트 옵션 모음 */
   scatterOption?: EChartsOption;
 
   /** 날짜 문자열 리스트 (x축용) */
