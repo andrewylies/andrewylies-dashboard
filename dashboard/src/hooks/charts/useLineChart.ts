@@ -4,6 +4,7 @@ import type { Sales } from '@/types/api/sales';
 import { niceCeil } from '@/lib/format';
 import { makeSalesLineOption } from '@/constants/charts/line';
 import { lowerBound, upperBound } from '@/lib';
+import type { ChartProps } from '@/types';
 
 export type UseLineChartResult = {
   lineOption?: EChartsOption;
@@ -22,22 +23,16 @@ export const useLineChart = ({
   end,
   candidates,
   getVal,
-}: {
-  sales: Sales[];
-  start: string;
-  end: string;
-  candidates?: Set<number>;
-  getVal: (s: Sales) => number;
-}): UseLineChartResult => {
+}: ChartProps): UseLineChartResult => {
   // 정렬 + 타임스탬프 준비
   const prepared = useMemo(() => {
-    if (sales.length === 0) {
+    if (sales?.length === 0) {
       return {
         rows: [] as Array<Sales & { __ts: number }>,
         ts: [] as number[],
       };
     }
-    const rows: Array<Sales & { __ts: number }> = sales.map((s) => ({
+    const rows: Array<Sales & { __ts: number }> = sales?.map((s) => ({
       ...s,
       __ts: new Date(s.salesDate).getTime(),
     }));

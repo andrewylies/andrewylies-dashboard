@@ -5,28 +5,16 @@ import { useSalesQuery } from '@/hooks/useSalesQuery';
 import { useProductsQuery } from '@/hooks/useProductsQuery';
 import { DEFAULT_PRESET_KEY, PRESET_RANGES } from '@/constants/date';
 import { ERROR_CODES } from '@/constants';
-import type { DashboardSearch } from '@/types';
+import type { ChartProps, DashboardSearch } from '@/types';
 import type { Sales } from '@/types/api/sales';
-import type { Product } from '@/types/api/products';
 import { buildIndexBy } from '@/lib/indexers';
 import { makeCandidates, type IndexBundle } from '@/lib/search';
 import { formatDateYMD } from '@/lib/time';
 
-export type ChartCommon = {
-  isPending: boolean;
-  start: string;
-  end: string;
-  sales: Sales[];
-  products: Product[];
-  indexBundle?: IndexBundle;
-  candidates?: Set<number>;
-  getVal: (s: Sales) => number;
-};
-
 /**
  * 공통 차트 훅
  */
-export const useChartCommon = (search: DashboardSearch): ChartCommon => {
+export const useChartCommon = (search: DashboardSearch): ChartProps => {
   const {
     data: sales = [],
     isPending: isSalesPending,
@@ -93,7 +81,7 @@ export const useChartCommon = (search: DashboardSearch): ChartCommon => {
     search.platform === 'web' || search.platform === 'app'
       ? search.platform
       : undefined;
-  const getVal = useMemo<ChartCommon['getVal']>(() => {
+  const getVal = useMemo<ChartProps['getVal']>(() => {
     if (platform === 'web') return (s: Sales) => s.webSales;
     if (platform === 'app') return (s: Sales) => s.appSales;
     return (s: Sales) => s.totalSales;

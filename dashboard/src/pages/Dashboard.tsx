@@ -1,24 +1,25 @@
 import { useDeferredValue, useMemo, useState } from 'react';
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { useSearch } from '@tanstack/react-router';
 import type { DashboardSearch } from '@/types';
 
 import { FilterSearchBar } from '@/components/filter/FilterSearchBar';
 import { ChartSection } from '@/components/charts/Section/ChartSection';
 import { FilterNoResult } from '@/components/filter/FilterNoResult';
-import { useChartData } from '@/hooks/charts';
+import { useExportChartData } from '@/hooks/charts';
 import {
   PieModeToggle,
   type PieMode,
 } from '@/components/charts/Section/PieModeToggleSection';
 import { CHART_SECTION_DEFAULT_HEIGHT } from '@/constants';
+import { TableSection } from '@/components/charts/Section/TableSection.tsx';
 
 export const Dashboard = () => {
   const search: DashboardSearch = useSearch({ from: '/' });
   const deferredSearch = useDeferredValue(search);
 
-  const { lineOption, stackOption, pieOption, isPending } =
-    useChartData(deferredSearch);
+  const { lineOption, stackOption, pieOption, isPending, common } =
+    useExportChartData(deferredSearch);
 
   const [pieMode, setPieMode] = useState<PieMode>('sales');
   const currentPie = useMemo(
@@ -46,7 +47,7 @@ export const Dashboard = () => {
   const showEmpty = !isPending && !hasData;
 
   return (
-    <Grid container spacing={1} sx={{ pt: 3, pb: 5 }}>
+    <Grid container spacing={1} sx={{ mt: 3, mb: 5 }}>
       {/* 검색/필터 바 */}
       <Grid size={{ xs: 12 }}>
         <FilterSearchBar />
@@ -90,6 +91,12 @@ export const Dashboard = () => {
           toolbar={pieToolbar}
           toolbarKey={pieMode}
         />
+      </Grid>
+      <Grid size={{ xs: 12 }}>
+        <Box sx={{ mt: 3 }} />
+      </Grid>
+      <Grid size={{ xs: 12 }}>
+        <TableSection common={common} />
       </Grid>
     </Grid>
   );

@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import type { EChartsOption } from 'echarts';
 import type { Sales } from '@/types/api/sales';
-import type { Product } from '@/types/api/products';
 import { sortSalesByDate, sliceByDate } from '@/lib/time';
 import { niceCeil } from '@/lib/format';
 import { makeSalesStackOption } from '@/constants/charts/stack';
 import { CHART_TEXT, STACK_Y_AXIS_MAX_LENGTH } from '@/constants';
+import type { ChartProps } from '@/types';
 
 export type UseStackChartResult = {
   stackOption?: EChartsOption;
@@ -25,14 +25,7 @@ export const useStackChart = ({
   end,
   candidates,
   getVal,
-}: {
-  sales: Sales[];
-  products: Product[];
-  start: string;
-  end: string;
-  candidates?: Set<number>;
-  getVal: (s: Sales) => number;
-}): UseStackChartResult => {
+}: ChartProps): UseStackChartResult => {
   const { stackCategories, stackStacks, stackMatrix, stackXMax } =
     useMemo(() => {
       if (sales.length === 0 || products.length === 0) {

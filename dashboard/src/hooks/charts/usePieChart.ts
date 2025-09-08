@@ -1,25 +1,15 @@
 import { useMemo } from 'react';
 import type { EChartsOption } from 'echarts';
 import type { Sales } from '@/types/api/sales';
-import type { Product } from '@/types/api/products';
 import { makeGenrePieOption } from '@/constants/charts/pie';
 import { CHART_TEXT } from '@/constants';
+import type { ChartProps } from '@/types';
 
 export type PieOptions = {
   /** 장르별 매출 비율 */
   sales?: EChartsOption;
   /** 장르별 작품 수 비율 */
   count?: EChartsOption;
-};
-
-type Props = {
-  sales: Sales[];
-  start: string;
-  end: string;
-  products: Product[];
-  candidates?: Set<number>;
-  /** 합산 기준 지표 (예: totalSales / webSales / appSales 등) */
-  getVal: (s: Sales) => number;
 };
 
 /** 불변 베이스 옵션(상수화): 데이터와 무관한 공통 파츠는 재사용 */
@@ -57,7 +47,7 @@ export const usePieChart = ({
   products,
   candidates,
   getVal,
-}: Props) => {
+}: ChartProps) => {
   // 정렬 + 타임스탬프 배열
   const prepared = useMemo(() => {
     if (sales.length === 0) {

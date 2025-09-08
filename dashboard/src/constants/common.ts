@@ -1,5 +1,6 @@
 import type { ProfileItem } from '@/types';
 export const CHART_SECTION_DEFAULT_HEIGHT = 400;
+export const TABLE_SECTION_DEFAULT_HEIGHT = 500;
 
 export const MENU_PROFILE: ProfileItem[] = [
   {
@@ -77,7 +78,7 @@ export const CHART_TEXT = {
 export const PAGE_TEXT = {
   LOADING: 'Fetching secrets from the database…',
   DASHBOARD: {
-    TITLE: 'Overview',
+    TITLE: 'Sales Overview',
     PLATFORM: {
       ALL: 'Total',
       APP: 'App',
@@ -102,7 +103,10 @@ export const PAGE_TEXT = {
     },
     STATUS: {
       SYNCING: 'Syncing data…',
-      UPDATED_AT: (time: string) => `Last updated: ${time}`, // "Updated:" 대신 심플한 "Last update •"
+      UPDATED_AT: (time: string) => `Last updated: ${time}`,
     },
+  },
+  TABLE: {
+    TITLE: 'Products Overview',
   },
 };
