@@ -474,6 +474,7 @@ export function TableSection({ common }: { common: ChartProps }) {
           display: 'flex',
           flexDirection: 'column',
           height: TABLE_SECTION_DEFAULT_HEIGHT,
+          width: '100%',
         }}
       >
         <DataGrid
