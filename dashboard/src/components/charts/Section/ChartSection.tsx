@@ -1,5 +1,6 @@
 import { Paper, useTheme, Box, Skeleton } from '@mui/material';
-import ReactECharts from 'echarts-for-react';
+import ReactEChartsCore from 'echarts-for-react/lib/core';
+import { echarts } from '@/lib/echarts';
 import type { ECElementEvent, EChartsOption } from 'echarts';
 import { useNavigate } from '@tanstack/react-router';
 import type { DashboardSearch } from '@/types';
@@ -169,7 +170,8 @@ export const ChartSection = memo(
 
         {/* 차트 */}
         <Box sx={{ height: '100%' }}>
-          <ReactECharts
+          <ReactEChartsCore
+            echarts={echarts}
             option={option}
             notMerge
             lazyUpdate

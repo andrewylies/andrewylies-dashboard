@@ -1,14 +1,11 @@
 import { Box, Container, Typography } from '@mui/material';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import Lottie from 'lottie-react';
 import { ERROR_CODES } from '@/constants';
 import { memo } from 'react';
+import noResultJson from '@/assets/lottie/noresult.json';
 
-const LOTTIE_SRC =
-  'https://lottie.host/b6f121b1-6bb3-4cd4-8959-97e29f486682/3A0trYswEa.lottie';
-
-const LOTTIE_STYLE = { width: '100%', height: '100%' } as const;
 const StaticLottie = memo(() => (
-  <DotLottieReact src={LOTTIE_SRC} loop autoplay style={LOTTIE_STYLE} />
+  <Lottie animationData={noResultJson} loop autoplay />
 ));
 StaticLottie.displayName = 'StaticLottie';
 

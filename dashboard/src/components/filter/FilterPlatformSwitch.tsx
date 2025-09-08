@@ -23,7 +23,7 @@ type Props = {
 
 export const PlatformQuickSwitch = memo(({ isFloating = false }: Props) => {
   const navigate = useNavigate();
-  const search = useSearch({ from: '/' });
+  const search: DashboardSearch = useSearch({ from: '__root__' });
 
   const platform: Platform =
     search.platform === 'web' || search.platform === 'app'
@@ -50,7 +50,7 @@ export const PlatformQuickSwitch = memo(({ isFloating = false }: Props) => {
     },
     [navigate]
   );
-
+  if (!search) return null;
   return (
     <Paper elevation={0}>
       <ToggleButtonGroup

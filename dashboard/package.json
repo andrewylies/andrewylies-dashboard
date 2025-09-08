@@ -13,7 +13,6 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.6",
-    "@lottiefiles/dotlottie-react": "^0.15.2",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
     "@mui/x-data-grid": "^8.11.0",
@@ -27,6 +26,7 @@
     "echarts": "^5.6.0",
     "echarts-for-react": "^3.0.2",
     "framer-motion": "^12.23.12",
+    "lottie-react": "^2.4.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "zustand": "^5.0.8"

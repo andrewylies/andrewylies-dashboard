@@ -2,8 +2,9 @@ import type { NotFoundRouteProps } from '@tanstack/react-router';
 import { ERROR_CODES } from '@/constants';
 import { Box, Button, Container, Typography } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import type { ErrorProps } from '@/types';
+import Lottie from 'lottie-react';
+import failJson from '@/assets/lottie/fail.json';
 
 export function NotFound({ data }: NotFoundRouteProps) {
   const error = data as ErrorProps;
@@ -15,7 +16,7 @@ export function NotFound({ data }: NotFoundRouteProps) {
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
-        minHeight: '90vh',
+        minHeight: '80vh',
         display: 'flex',
         padding: 5,
       }}
@@ -24,10 +25,7 @@ export function NotFound({ data }: NotFoundRouteProps) {
         <Box
           sx={{ display: 'flex', justifyContent: 'center', height: '276px' }}
         >
-          <DotLottieReact
-            src="https://lottie.host/648f0176-f3f9-4518-8cb3-e92ee7f2ce06/kyXdc7UwDv.lottie"
-            autoplay
-          />
+          <Lottie animationData={failJson} autoplay loop={false} />
         </Box>
 
         <Box sx={{ mt: 4 }}>
