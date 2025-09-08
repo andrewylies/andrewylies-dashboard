@@ -104,23 +104,11 @@ export const summarizeCsv = (label: string, csv: string): string => {
 };
 
 /** 1/2/5 스텝 올림 라운딩 (축 max 계산용) */
-export const niceCeil = (
-  v: number,
-  steps: number[] = [1, 2, 5, 10]
-): number => {
+export const niceCeil = (v: number): number => {
   if (v <= 0) return 1;
-
   const p = Math.pow(10, Math.floor(Math.log10(v)));
   const n = v / p;
-
-  let step = steps[steps.length - 1];
-  for (const s of steps) {
-    if (n <= s) {
-      step = s;
-      break;
-    }
-  }
-
+  const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
   return step * p;
 };
 /** ₩ 통화 축약: 천/만/억 (소수 1자리, .0 제거) */
