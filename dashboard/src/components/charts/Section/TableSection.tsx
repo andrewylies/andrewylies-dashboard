@@ -485,7 +485,6 @@ export function TableSection({
           rows={isPending || hidden ? [] : rows}
           columns={columns}
           initialState={{
-            sorting: { sortModel: [{ field: 'salesTotal', sort: 'desc' }] },
             pagination: { paginationModel: { page: 0, pageSize: 25 } },
           }}
           pageSizeOptions={[25, 50, 100]}
