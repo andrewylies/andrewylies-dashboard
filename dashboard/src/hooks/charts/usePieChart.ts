@@ -3,6 +3,7 @@ import type { EChartsOption } from 'echarts';
 import type { Sales } from '@/types/api/sales';
 import type { Product } from '@/types/api/products';
 import { makeGenrePieOption } from '@/constants/charts/pie';
+import { CHART_TEXT } from '@/constants';
 
 export type PieOptions = {
   /** 장르별 매출 비율 */
@@ -92,7 +93,8 @@ export const usePieChart = ({
   // productId -> genre 매핑
   const productGenre = useMemo(() => {
     const map = new Map<number, string>();
-    for (const p of products) map.set(p.productId, p.genre ?? 'Unknown');
+    for (const p of products)
+      map.set(p.productId, p.genre ?? CHART_TEXT.FALLBACK.GENRE);
     return map;
   }, [products]);
 
@@ -116,7 +118,8 @@ export const usePieChart = ({
       const row = filtered[i];
       if (useFilter && !candidates!.has(row.productId)) continue;
 
-      const genre = productGenre.get(row.productId) ?? 'Unknown';
+      const genre =
+        productGenre.get(row.productId) ?? CHART_TEXT.FALLBACK.GENRE;
       salesByGenre.set(genre, (salesByGenre.get(genre) ?? 0) + getVal(row));
       countByGenre.set(genre, (countByGenre.get(genre) ?? 0) + 1);
     }

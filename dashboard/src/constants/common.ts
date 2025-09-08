@@ -64,6 +64,14 @@ export const CHART_TEXT = {
       COUNT: 'Title Share',
     },
   },
+  FALLBACK: {
+    GENRE: 'Unclassified',
+    CATEGORY: 'Unclassified',
+    PUBLISHER: 'Unclassified',
+    AUTHOR: 'Unclassified',
+    STATUS: 'Unclassified',
+    TAG: 'Unclassified',
+  },
 };
 
 export const PAGE_TEXT = {

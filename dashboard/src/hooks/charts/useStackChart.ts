@@ -5,7 +5,7 @@ import type { Product } from '@/types/api/products';
 import { sortSalesByDate, sliceByDate } from '@/lib/time';
 import { niceCeil } from '@/lib/format';
 import { makeSalesStackOption } from '@/constants/charts/stack';
-import { STACK_Y_AXIS_MAX_LENGTH } from '@/constants';
+import { CHART_TEXT, STACK_Y_AXIS_MAX_LENGTH } from '@/constants';
 
 export type UseStackChartResult = {
   stackOption?: EChartsOption;
@@ -48,8 +48,8 @@ export const useStackChart = ({
       const meta = new Map<number, { publisher: string; category: string }>();
       for (const p of products) {
         meta.set(p.productId, {
-          publisher: p.publisher ?? '기타',
-          category: p.category ?? '기타',
+          publisher: p.publisher ?? CHART_TEXT.FALLBACK.PUBLISHER,
+          category: p.category ?? CHART_TEXT.FALLBACK.CATEGORY,
         });
       }
 
@@ -69,8 +69,8 @@ export const useStackChart = ({
         const m = meta.get(row.productId);
         if (!m) continue;
 
-        const pub = m.publisher || '기타';
-        const cat = m.category || '기타';
+        const pub = m.publisher || CHART_TEXT.FALLBACK.PUBLISHER;
+        const cat = m.category || CHART_TEXT.FALLBACK.CATEGORY;
         const val = getVal(row);
 
         let pubMap = agg.get(pub);
