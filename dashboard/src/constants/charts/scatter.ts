@@ -1,26 +1,16 @@
-import type { EChartsOption } from 'echarts';
+import type { EChartsOption, ScatterSeriesOption } from 'echarts';
+type ScatterDataItem = NonNullable<ScatterSeriesOption['data']>[number];
+
 import { CHART_TEXT } from '@/constants';
 import { formatKRWShort } from '@/lib';
-
-export type ScatterPoint = {
-  name: string;
-  productId: number;
-  publisher: string;
-  category: string;
-  genre: string;
-  // [reads, paid, sales]
-  value: [number, number, number];
-};
-
-export type MakeScatterParams = {
-  data: ScatterPoint[];
-  maxSales: number;
-};
 
 export function makeSalesScatterOption({
   data,
   maxSales,
-}: MakeScatterParams): EChartsOption {
+}: {
+  data: ScatterDataItem[];
+  maxSales: number;
+}): EChartsOption {
   const size = (val: number) => {
     if (val <= 0) return 2;
     const s = 2 + 14 * Math.sqrt(val / Math.max(1, maxSales));
