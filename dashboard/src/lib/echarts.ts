@@ -7,7 +7,6 @@ import {
   GridComponent,
   VisualMapComponent,
   ToolboxComponent,
-  DataZoomComponent,
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 
@@ -22,7 +21,6 @@ echarts.use([
   GridComponent,
   VisualMapComponent,
   ToolboxComponent,
-  DataZoomComponent,
   CanvasRenderer,
 ]);
 
