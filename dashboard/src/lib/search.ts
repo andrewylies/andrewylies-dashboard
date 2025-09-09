@@ -1,7 +1,10 @@
 import type { DashboardSearch, FilterKey } from '@/types';
 
-/** 오름차순 정렬된 numbers에서 target 이상이 처음 나오는 인덱스 */
-export const lowerBound = (arr: readonly number[], target: number): number => {
+/** 정렬된 배열에서 target 이상(>=)이 처음 나타나는 인덱스 */
+export const lowerBound = <T extends string | number>(
+  arr: readonly T[],
+  target: T
+): number => {
   let lo = 0,
     hi = arr.length;
   while (lo < hi) {
@@ -12,8 +15,11 @@ export const lowerBound = (arr: readonly number[], target: number): number => {
   return lo;
 };
 
-/** 오름차순 정렬된 numbers에서 target 초과가 처음 나오는 인덱스 */
-export const upperBound = (arr: readonly number[], target: number): number => {
+/** 정렬된 배열에서 target 초과(>)가 처음 나타나는 인덱스 */
+export const upperBound = <T extends string | number>(
+  arr: readonly T[],
+  target: T
+): number => {
   let lo = 0,
     hi = arr.length;
   while (lo < hi) {
@@ -24,14 +30,7 @@ export const upperBound = (arr: readonly number[], target: number): number => {
   return lo;
 };
 
-/**
- * 두 Set의 교집합을 구한다.
- * - 성능 최적화를 위해 작은 Set 먼저 순회.
- *
- * @param a 첫 번째 Set (없으면 b 반환)
- * @param b 두 번째 Set (없으면 a 반환)
- * @returns 교집합(Set) 또는 undefined
- */
+/** 두 Set의 교집합 (없으면 다른 쪽 그대로 반환) */
 export const intersect = (a?: Set<number>, b?: Set<number>) => {
   if (!a) return b;
   if (!b) return a;
@@ -41,14 +40,7 @@ export const intersect = (a?: Set<number>, b?: Set<number>) => {
   return out;
 };
 
-/**
- * 역인덱스에서 선택값들의 버킷을 합집합으로 모은다.
- * (publisher/genre/status/category 같은 단일 키 필터에 사용)
- *
- * @param index key → productId 집합으로 매핑된 인덱스
- * @param selected 선택된 key 집합 (없으면 undefined 반환)
- * @returns 선택된 key의 bucket 합집합 (없으면 undefined)
- */
+/** 역인덱스에서 선택된 key들의 합집합 */
 export const unionFromIndex = (
   index: Map<string, Set<number>>,
   selected?: Set<string>
@@ -62,14 +54,7 @@ export const unionFromIndex = (
   return out;
 };
 
-/**
- * 역인덱스에서 선택된 태그를 모두 포함하는 교집합을 계산.
- * (tags: 모든 선택 태그를 가진 작품만 필터링)
- *
- * @param index tag → productId 집합으로 매핑된 인덱스
- * @param selected 선택된 tag 집합 (없으면 undefined 반환)
- * @returns 선택된 모든 태그를 포함하는 교집합 (없으면 undefined)
- */
+/** 역인덱스에서 선택된 모든 태그의 교집합 */
 export const intersectAllFromIndex = (
   index: Map<string, Set<number>>,
   selected?: Set<string>
@@ -101,17 +86,8 @@ import {
   STATUS_LABELS,
 } from '@/constants';
 
-/**
- * 검색 파라미터(DashboardSearch)와 인덱스 번들로
- * 최종 후보군(productId Set)을 만든다.
- * - 단일키(publisher/genre/status/category)는 선택값 합집합 → 누적 교집합
- * - tags는 선택된 태그들의 교집합 → 누적 교집합
- * - 어떤 필터도 없으면 undefined 반환(= 전체 허용)
- *
- * @param search DashboardSearch 쿼리 파라미터 (csv 문자열)
- * @param idx 인덱스 번들 (publisher/genre/status/category/tags)
- * @returns productId Set 또는 undefined
- */
+/** 검색 파라미터와 인덱스를 기반으로 후보군(productId Set) 생성 */
+
 export const makeCandidates = (search: DashboardSearch, idx: IndexBundle) => {
   const selPublisher = csvToSet(search.publisher);
   const selGenre = csvToSet(search.genre);
@@ -137,12 +113,7 @@ export const makeCandidates = (search: DashboardSearch, idx: IndexBundle) => {
   return acc;
 };
 
-/**
- * 날짜 필터 칩 객체를 만든다.
- *
- * @param search DashboardSearch (URL 파라미터)
- * @returns [{ key, label }] 또는 null (날짜 미지정 시)
- */
+/** 날짜 범위 필터 칩 생성 */
 export const buildDateChip = (search: DashboardSearch) => {
   if (!search.start && !search.end) return null;
   const s = search.start ? dayjs(search.start).format(DATE_FORMAT) : '—';
@@ -150,13 +121,7 @@ export const buildDateChip = (search: DashboardSearch) => {
   return { key: 'date' as const, label: `${s} ~ ${e}` };
 };
 
-/**
- * publisher, genre, status, category, tags 같은 다중 선택 필터에 대한 칩들을 만든다.
- *
- * @param search DashboardSearch (URL 파라미터)
- * @param summarize summarizeCsv 같은 요약 함수
- * @returns [{ key, label }] 배열
- */
+/** 다중 선택 필터 칩 배열 생성 (status는 라벨 매핑 적용) */
 export const buildMultiChips = (
   search: DashboardSearch,
   summarize: (label: string, csv: string) => string
@@ -174,6 +139,7 @@ export const buildMultiChips = (
   );
 };
 
+/** CSV 문자열을 매핑 사전으로 치환 후 다시 CSV로 반환 */
 const mapCsv = (csv: string, dict: Record<string, string>) =>
   csv
     .split(',')

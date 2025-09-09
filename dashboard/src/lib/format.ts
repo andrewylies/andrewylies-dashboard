@@ -1,10 +1,6 @@
 /**
- * YYYY-MM-DD 같은 문자열만 허용.
- * - 정규식 /^\d{4}-\d{2}-\d{2}$/ 로 기본적인 패턴만 검증.
- * - 유효하지 않은 날짜(예: 2025-13-40)는 통과할 수 있으므로,
- *   필요하면 dayjs 등 추가 검증 로직을 별도 적용해야 함.
- * @param v 임의 값
- * @returns 유효한 "YYYY-MM-DD" 문자열 또는 undefined
+ * "YYYY-MM-DD" 형식 문자열만 통과.
+ * (날짜 유효성은 추가 검증 필요)
  */
 export const sanitizeDate = (v: unknown): string | undefined => {
   if (typeof v !== 'string') return undefined;
@@ -13,21 +9,11 @@ export const sanitizeDate = (v: unknown): string | undefined => {
 };
 
 /**
- * CSV 문자열(쉼표로 구분된 값)을 정제.
- * - 동작:
- *   1. 공백 제거
- *   2. 빈값 제거
- *   3. 'all' 값 제거 (대소문자 무시)
- *   4. 중복 제거
- *   5. 알파벳 순 정렬 (localeCompare)
- * - 결과가 없으면 undefined 반환.
- *
- * 예시:
- *   " drama, ,all,action ,drama "
- *   -> "action,drama"
- *
- * @param v 임의 값
- * @returns 정제된 CSV 문자열 or undefined
+ * CSV 문자열 정제.
+ * - 공백/빈값 제거
+ * - 'all' 제거(대소문자 무시)
+ * - 중복 제거
+ * - 알파벳 순 정렬
  */
 export const sanitizeCsv = (v: unknown): string | undefined => {
   if (typeof v !== 'string') return undefined;
@@ -41,13 +27,7 @@ export const sanitizeCsv = (v: unknown): string | undefined => {
   return uniq.join(',');
 };
 
-/**
- * CSV 문자열을 Set<string>으로 변환.
- * - 빈값/공백 제거.
- * - undefined나 빈 결과면 undefined 반환.
- * @param csv CSV 문자열
- * @returns Set<string> | undefined
- */
+/** CSV 문자열을 Set으로 변환 (빈 결과면 undefined) */
 export const csvToSet = (csv?: string): Set<string> | undefined => {
   if (!csv) return undefined;
   const set = new Set<string>();
@@ -58,12 +38,7 @@ export const csvToSet = (csv?: string): Set<string> | undefined => {
   return set.size ? set : undefined;
 };
 
-/**
- * Set<string> → CSV
- * - 빈 Set이면 undefined 반환(쿼리 제거용)
- * - 정렬 안정화
- * @param set 집합
- */
+/** Set을 CSV 문자열로 변환 (빈 Set이면 undefined) */
 export const setToCsv = (set: Set<string>) => {
   if (!set.size) return undefined;
   return Array.from(set)
@@ -71,6 +46,7 @@ export const setToCsv = (set: Set<string>) => {
     .join(',');
 };
 
+/** CSV → Set (공백·빈값·'all' 제거) */
 export const csvToSetFiltered = (csv?: string) => {
   if (!csv) return new Set<string>();
   return new Set(
@@ -82,14 +58,10 @@ export const csvToSetFiltered = (csv?: string) => {
 };
 
 /**
- * CSV 문자열을 요약 라벨로 변환한다.
- * - 항목 1개 → "라벨: a"
- * - 항목 2개 → "라벨: a, b"
- * - 항목 3개 이상 → "라벨: a, b 외 N"
- *
- * @param label 표시할 필드 라벨 (예: 장르, 출판사)
- * @param csv "a,b,c" 형태의 CSV 문자열
- * @returns 요약된 문자열
+ * CSV 문자열 요약 라벨 생성.
+ * - 1개: "라벨: a"
+ * - 2개: "라벨: a, b"
+ * - 3개 이상: "라벨: a, b 외 N"
  */
 export const summarizeCsv = (label: string, csv: string): string => {
   const arr = csv
@@ -103,7 +75,7 @@ export const summarizeCsv = (label: string, csv: string): string => {
   return `${label}: ${arr[0]}, ${arr[1]} 외 ${arr.length - 2}`;
 };
 
-/** 1/2/5 스텝 올림 라운딩 (축 max 계산용) */
+/** 값의 상한을 1/2/5 계열로 올림 (차트 축 max 계산용) */
 export const niceCeil = (v: number): number => {
   if (v <= 0) return 1;
   const p = Math.pow(10, Math.floor(Math.log10(v)));
@@ -111,7 +83,18 @@ export const niceCeil = (v: number): number => {
   const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
   return step * p;
 };
-/** ₩ 통화 축약: 천/만/억 (소수 1자리, .0 제거) */
+
+/**
+ * 원화 단위 축약(K/M/B) 포맷
+ * - 음수는 "-₩" 접두
+ * - 소수는 1자리 (예: 1.2K)
+ * - withSymbol=true → ₩ 표시
+ *
+ * @example
+ *  formatKRWShort(1250, true)  → "₩1.2K"
+ *  formatKRWShort(1000, true)  → "₩1K"
+ *  formatKRWShort(-950)        → "-950"
+ */
 export const formatKRWShort = (value: number, withSymbol = false) => {
   const abs = Math.abs(value);
   const sign = value < 0 ? '-' : '';
