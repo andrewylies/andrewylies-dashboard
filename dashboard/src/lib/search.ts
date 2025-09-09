@@ -76,6 +76,7 @@ export type IndexBundle = {
   byCategory: Map<string, Set<number>>;
   byTag: Map<string, Set<number>>;
 };
+type ChipItem = { key: FilterKey; label: string };
 
 import { csvToSet, summarizeCsv } from '@/lib';
 import dayjs from 'dayjs';
@@ -122,7 +123,7 @@ export const buildDateChip = (search: DashboardSearch) => {
 };
 
 /** 다중 선택 필터 칩 배열 생성 (status는 라벨 매핑 적용) */
-export const buildMultiChips = (search: DashboardSearch) => {
+export const buildMultiChips = (search: DashboardSearch): ChipItem[] => {
   return MULTI_KEYS.reduce<Array<{ key: FilterKey; label: string }>>(
     (acc, k) => {
       const v = search[k];

@@ -6,7 +6,7 @@ type Props = {
   title: string;
   type: FilterKey;
   isAll: boolean;
-  onAll: () => void;
+  onAll: (key: FilterKey) => void;
   selected: Set<string>;
   options: { value: string; label: string }[];
   onToggle: (key: FilterKey, value: string) => void;
@@ -31,7 +31,7 @@ export const CapsuleSection = ({
         <Chip
           label={ALL.label}
           clickable
-          onClick={onAll}
+          onClick={() => onAll(type)}
           color={isAll ? 'primary' : 'default'}
           variant={isAll ? 'filled' : 'outlined'}
           sx={{ borderRadius: 999 }}

@@ -13,7 +13,7 @@ import {
 import TuneIcon from '@mui/icons-material/Tune';
 import { useRouter, useSearch } from '@tanstack/react-router';
 import type { DashboardSearch } from '@/types';
-import { summarizeCsv, buildDateChip, buildMultiChips } from '@/lib';
+import { buildDateChip, buildMultiChips } from '@/lib';
 import { FilterModal } from '@/components/filter/FilterModal.tsx';
 import { PlatformQuickSwitch } from '@/components/filter/FilterPlatformSwitch.tsx';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
@@ -49,7 +49,7 @@ export const FilterSearchBar = () => {
 
   const chips = useMemo(() => {
     const dateChip = buildDateChip(search);
-    const multi = buildMultiChips(search, summarizeCsv);
+    const multi = buildMultiChips(search);
     const all = [...(dateChip ? [dateChip] : []), ...multi];
 
     return all.map((c) => ({

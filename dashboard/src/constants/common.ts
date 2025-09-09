@@ -98,6 +98,8 @@ export const CHART_TEXT = {
 
 export const PAGE_TEXT = {
   LOADING: 'Fetching secrets from the database…',
+  CANCEL: 'Cancel',
+  APPLY: 'Apply',
   DASHBOARD: {
     TITLE: 'Sales Overview',
     PLATFORM: {
