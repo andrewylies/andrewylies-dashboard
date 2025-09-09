@@ -77,7 +77,5 @@ export const makeSalesStackOption = ({
       axisTick: { show: false },
     },
     series,
-    progressive: 1000,
-    progressiveThreshold: 2000,
   };
 };

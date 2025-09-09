@@ -76,8 +76,8 @@ export function makeSalesScatterOption({
         itemStyle: {
           opacity: 0.5,
         },
-        progressive: 4000,
-        progressiveThreshold: 3000,
+        progressive: 5000,
+        progressiveThreshold: 4000,
         animation: true,
         emphasis: { focus: 'series' },
       },
