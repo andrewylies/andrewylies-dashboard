@@ -99,7 +99,5 @@ export const makeSalesLineOption = ({
       },
     ],
     series,
-    progressive: 3000,
-    progressiveThreshold: 2000,
   };
 };
