@@ -67,7 +67,7 @@ export const makeSalesStackOption = ({
       min: 0,
       max: xMax,
       axisLabel: {
-        formatter: (val: number) => formatKRWShort(Number(val ?? 0)),
+        formatter: (val: number) => formatKRWShort(Number(val)),
       },
       splitLine: { show: true },
     },

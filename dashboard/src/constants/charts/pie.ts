@@ -61,7 +61,5 @@ export const makeGenrePieOption = ({
       padding: 20,
     },
     series,
-    progressive: 1000,
-    progressiveThreshold: 2000,
   };
 };

@@ -12,9 +12,9 @@ export function makeSalesScatterOption({
   maxSales: number;
 }): EChartsOption {
   const size = (val: number) => {
-    if (val <= 0) return 2;
-    const s = 2 + 14 * Math.sqrt(val / Math.max(1, maxSales));
-    return Math.max(2, Math.min(16, Math.floor(s))); // 2~16px
+    if (val <= 0) return 1;
+    const s = 1 + 7 * Math.sqrt(val / Math.max(1, maxSales));
+    return Math.max(1, Math.min(8, Math.floor(s))); // 1~8px
   };
 
   return {
@@ -73,6 +73,12 @@ export function makeSalesScatterOption({
           const sales = arr[2] ?? 0;
           return size(sales);
         },
+        itemStyle: {
+          opacity: 0.5,
+        },
+        progressive: 4000,
+        progressiveThreshold: 3000,
+        animation: true,
         emphasis: { focus: 'series' },
       },
     ],

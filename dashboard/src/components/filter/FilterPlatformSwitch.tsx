@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import {
   Divider,
   Paper,
@@ -9,7 +9,7 @@ import {
 import ComputerIcon from '@mui/icons-material/Computer';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import SegmentIcon from '@mui/icons-material/Segment';
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useNavigate, useRouterState } from '@tanstack/react-router';
 import type { DashboardSearch } from '@/types';
 import * as React from 'react';
 import { PAGE_TEXT } from '@/constants';
@@ -21,20 +21,22 @@ type Props = {
   isFloating?: boolean;
 };
 
-export const PlatformQuickSwitch = memo(({ isFloating = false }: Props) => {
+const PlatformQuickSwitchInner = ({ isFloating = false }: Props) => {
   const navigate = useNavigate();
-  const search: DashboardSearch = useSearch({ from: '__root__' });
 
-  const platform: Platform =
-    search.platform === 'web' || search.platform === 'app'
-      ? search.platform
-      : undefined;
-  const uiValue: UIValue = platform ?? '';
+  const platform = useRouterState({
+    select: (s) =>
+      (s.location.search as Partial<DashboardSearch>)?.platform as Platform,
+  });
+
+  const uiValue: UIValue = useMemo(
+    () => (platform === 'web' || platform === 'app' ? platform : ''),
+    [platform]
+  );
 
   const handleChange = useCallback(
     (_e: React.MouseEvent<HTMLElement>, next: UIValue | null) => {
       const nextUi: UIValue = next ?? '';
-
       void navigate({
         from: '/',
         replace: true,
@@ -50,15 +52,20 @@ export const PlatformQuickSwitch = memo(({ isFloating = false }: Props) => {
     },
     [navigate]
   );
-  if (!search) return null;
+
+  const paperSx = useMemo(
+    () => ({ opacity: isFloating ? 0.6 : 1 }),
+    [isFloating]
+  );
+
   return (
-    <Paper elevation={0}>
+    <Paper elevation={isFloating ? 4 : 0} sx={paperSx}>
       <ToggleButtonGroup
         size="small"
         value={uiValue}
         exclusive
         onChange={handleChange}
-        color={'primary'}
+        color="primary"
         orientation={isFloating ? 'vertical' : 'horizontal'}
       >
         <Tooltip
@@ -73,13 +80,16 @@ export const PlatformQuickSwitch = memo(({ isFloating = false }: Props) => {
               display: 'flex',
               gap: 0.5,
             }}
+            aria-label="All platforms"
           >
             <SegmentIcon />
           </ToggleButton>
         </Tooltip>
+
         {!isFloating && (
-          <Divider flexItem orientation={'vertical'} sx={{ mx: 0.5, my: 1 }} />
+          <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
         )}
+
         <Tooltip
           title={PAGE_TEXT.DASHBOARD.PLATFORM.APP}
           disableHoverListener={isFloating}
@@ -92,13 +102,16 @@ export const PlatformQuickSwitch = memo(({ isFloating = false }: Props) => {
               display: 'flex',
               gap: 0.5,
             }}
+            aria-label="App only"
           >
             <PhoneIphoneIcon />
           </ToggleButton>
         </Tooltip>
+
         {!isFloating && (
-          <Divider flexItem orientation={'vertical'} sx={{ mx: 0.5, my: 1 }} />
+          <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
         )}
+
         <Tooltip
           title={PAGE_TEXT.DASHBOARD.PLATFORM.WEB}
           disableHoverListener={isFloating}
@@ -111,6 +124,7 @@ export const PlatformQuickSwitch = memo(({ isFloating = false }: Props) => {
               display: 'flex',
               gap: 0.5,
             }}
+            aria-label="Web only"
           >
             <ComputerIcon />
           </ToggleButton>
@@ -118,4 +132,9 @@ export const PlatformQuickSwitch = memo(({ isFloating = false }: Props) => {
       </ToggleButtonGroup>
     </Paper>
   );
-});
+};
+
+export const PlatformQuickSwitch = memo(
+  PlatformQuickSwitchInner,
+  (prev, next) => prev.isFloating === next.isFloating
+);
