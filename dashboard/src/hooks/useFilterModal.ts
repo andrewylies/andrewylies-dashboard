@@ -12,61 +12,14 @@ import { useFilterStore } from '@/stores/filterStore';
 import type { DashboardSearch, FilterKey, FilterOptionsMap } from '@/types';
 import { csvToSet, setToCsv } from '@/lib';
 
-type UseFilterModalReturn = {
-  /** 선택된 시작일 */
-  start: Dayjs | null;
-
-  /** 선택된 종료일 */
-  end: Dayjs | null;
-
-  /** 선택된 날짜 프리셋 키 (예: '7d', '14d') */
-  presetKey: string | null;
-
-  /** 시작일 검증 에러 메시지 */
-  startErrorMsg?: string;
-
-  /** 종료일 검증 에러 메시지 */
-  endErrorMsg?: string;
-
-  /** 날짜 범위가 유효하지 않은지 여부 */
-  hasDateError: boolean;
-
-  /** 프리셋 버튼 클릭 시 날짜/키 변경 */
-  handlePreset: (key: string) => void;
-
-  /** 시작일 변경 핸들러 */
-  handleStartChange: (d: Dayjs | null) => void;
-
-  /** 종료일 변경 핸들러 */
-  handleEndChange: (d: Dayjs | null) => void;
-
-  /** 필터 옵션 목록 (출판사, 장르, 상태 등) */
-  options: FilterOptionsMap;
-
-  /** 각 필터 키별 현재 선택 상태 */
-  multi: Record<FilterKey, MultiState>;
-
-  /** 개별 chip 토글 */
-  toggleValue: (key: FilterKey, value: string) => void;
-
-  /** "전체" 버튼 클릭 */
-  clickAll: (key: FilterKey) => void;
-
-  /** 초기 상태와 비교해 변경이 없는지 여부 */
-  isUnchanged: boolean;
-
-  /** 적용 버튼 핸들러 (URL 쿼리 갱신 + 모달 닫기) */
-  handleApply: () => void;
-
-  /** 취소 버튼 핸들러 (단순 모달 닫기) */
-  handleCancel: () => void;
-
-  /** 모달 열릴 때 URL 검색값을 상태로 동기화 */
-  syncOnOpen: () => void;
-};
-
 type MultiState = { isAll: boolean; set: Set<string> };
 const asAll = (): MultiState => ({ isAll: true, set: new Set() });
+
+type DateVM = {
+  start: Dayjs | null;
+  end: Dayjs | null;
+  presetKey: string | null;
+};
 
 type DateRangeState = {
   start: Dayjs | null;
@@ -75,10 +28,59 @@ type DateRangeState = {
   presetKey: string | null;
 };
 
-const isAllCovered = (sel: Set<string>, allSet: Set<string>) =>
+/** 훅 반환 타입(그룹화) */
+export type UseFilterModalVM = {
+  /** 필터 모달 상태 */
+  state: {
+    /** 날짜 상태 (시작/종료/프리셋) */
+    date: DateVM;
+    /** 멀티 선택 상태 (publisher/genre/...) */
+    multi: Record<FilterKey, MultiState>;
+    /** 각 키별 필터 옵션 목록 */
+    options: FilterOptionsMap;
+  };
+  /** 에러 메시지 모음 */
+  errors: {
+    /** 시작일 에러 메시지 */
+    start?: string;
+    /** 종료일 에러 메시지 */
+    end?: string;
+  };
+  /** 상태 플래그 */
+  flags: {
+    /** 날짜 범위가 잘못되었는지 여부 */
+    hasDateError: boolean;
+    /** 초기 상태와 비교해 변경이 없는지 여부 */
+    isUnchanged: boolean;
+  };
+  /** 모달 동작 */
+  actions: {
+    /** 프리셋 버튼 클릭 */
+    preset: (key: string) => void;
+    /** 시작일 변경 */
+    setStart: (d: Dayjs | null) => void;
+    /** 종료일 변경 */
+    setEnd: (d: Dayjs | null) => void;
+    /** 개별 값 토글 */
+    toggle: (key: FilterKey, value: string) => void;
+    /** 전체 선택 */
+    selectAll: (key: FilterKey) => void;
+    /** 적용 (쿼리 반영 + 닫기) */
+    apply: () => void;
+    /** 취소 (닫기) */
+    cancel: () => void;
+    /** 모달 오픈 시 URL 검색값을 상태로 동기화 */
+    syncOnOpen: () => void;
+  };
+};
+
+const isAllCovered = (sel: Set<string>, allSet: Set<string>): boolean =>
   sel.size === allSet.size && [...sel].every((v) => allSet.has(v));
 
-const toCsvIfPartial = (st: MultiState, allSet: Set<string>) => {
+const toCsvIfPartial = (
+  st: MultiState,
+  allSet: Set<string>
+): string | undefined => {
   if (st.isAll || st.set.size === 0) return undefined;
   if (isAllCovered(st.set, allSet)) return undefined;
   return setToCsv(st.set);
@@ -97,10 +99,8 @@ const matchPresetKey = (
   return hit?.key ?? null;
 };
 
-/**
- * 필터 모달 열림/닫힘 상태 관리 훅
- */
-export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
+/** 필터 모달용 상태/동작 훅 (그룹화된 반환) */
+export const useFilterModal = (onClose: () => void): UseFilterModalVM => {
   const router = useRouter();
   const search = useSearch({ from: '/' });
   const options = useFilterStore((s) => s.options);
@@ -112,8 +112,12 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
     presetKey: DEFAULT_PRESET_KEY,
   });
 
-  const [multi, setMulti] = useState<Record<FilterKey, MultiState>>(() =>
-    Object.fromEntries(MULTI_KEYS.map((k) => [k, asAll()]))
+  const [multi, setMulti] = useState<Record<FilterKey, MultiState>>(
+    () =>
+      Object.fromEntries(MULTI_KEYS.map((k) => [k, asAll()])) as Record<
+        FilterKey,
+        MultiState
+      >
   );
 
   const [initial, setInitial] = useState<{
@@ -123,6 +127,7 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
     multi: Record<FilterKey, MultiState>;
   } | null>(null);
 
+  /** 각 필터키의 전체 옵션 집합 */
   const allSets: Record<FilterKey, Set<string>> = useMemo(() => {
     const reduce = (arr?: { value: string; label: string }[]) =>
       new Set((arr ?? []).map((o) => o.value).filter((v) => v && v !== 'all'));
@@ -135,16 +140,23 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
     };
   }, [options]);
 
+  /** CSV를 초기 MultiState로 변환 */
   const initMulti = useCallback(
     (csv?: string, allSet?: Set<string>): MultiState => {
       const parsed = csvToSet(csv, true);
-      if (!allSet || parsed.size === 0 || isAllCovered(parsed, allSet))
+      if (
+        !parsed ||
+        !allSet ||
+        parsed.size === 0 ||
+        isAllCovered(parsed, allSet)
+      )
         return asAll();
       return { isAll: false, set: parsed };
     },
     []
   );
 
+  /** 모달 오픈 시 URL 검색값으로 상태 동기화 */
   const syncOnOpen = useCallback(() => {
     let s: Dayjs | null;
     let e: Dayjs | null;
@@ -165,7 +177,7 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
 
     const nextMulti: Record<FilterKey, MultiState> = Object.fromEntries(
       MULTI_KEYS.map((k) => [k, initMulti(search[k], allSets[k])])
-    );
+    ) as Record<FilterKey, MultiState>;
 
     setMulti(nextMulti);
 
@@ -177,7 +189,8 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
     });
   }, [search, allSets, initMulti]);
 
-  const toggleValue = useCallback(
+  /** 개별 값 토글 */
+  const toggle = useCallback(
     (key: FilterKey, value: string) => {
       setMulti((prev) => {
         const target = prev[key];
@@ -188,10 +201,7 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
         if (next.has(value)) next.delete(value);
         else next.add(value);
         if (next.size === 0) {
-          return {
-            ...prev,
-            [key]: { isAll: true, set: new Set<string>() },
-          };
+          return { ...prev, [key]: asAll() };
         }
         return {
           ...prev,
@@ -204,11 +214,13 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
     [allSets]
   );
 
-  const clickAll = useCallback((key: FilterKey) => {
+  /** 전체 선택 */
+  const selectAll = useCallback((key: FilterKey) => {
     setMulti((prev) => ({ ...prev, [key]: asAll() }));
   }, []);
 
-  const handlePreset = useCallback((key: string) => {
+  /** 프리셋 선택 */
+  const preset = useCallback((key: string) => {
     const p = PRESET_RANGES.find((x) => x.key === key);
     if (!p) return;
     const r = p.get();
@@ -220,7 +232,8 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
     });
   }, []);
 
-  const handleStartChange = useCallback((d: Dayjs | null) => {
+  /** 시작일 변경 */
+  const setStart = useCallback((d: Dayjs | null) => {
     setDate((prev) => ({
       ...prev,
       start: d,
@@ -229,7 +242,8 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
     }));
   }, []);
 
-  const handleEndChange = useCallback((d: Dayjs | null) => {
+  /** 종료일 변경 */
+  const setEnd = useCallback((d: Dayjs | null) => {
     setDate((prev) => ({
       ...prev,
       end: d,
@@ -250,6 +264,7 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
       : undefined;
   const hasDateError = reversed;
 
+  /** 변경 여부 플래그 */
   const isUnchanged = useMemo(() => {
     if (!initial) return true;
     const s = date.start ? date.start.format(DATE_FORMAT) : undefined;
@@ -268,11 +283,13 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
     );
   }, [initial, date, multi]);
 
-  const handleCancel = useCallback(() => {
+  /** 취소(닫기) */
+  const cancel = useCallback(() => {
     onClose();
   }, [onClose]);
 
-  const handleApply = useCallback(() => {
+  /** 적용(쿼리 반영 후 닫기) */
+  const apply = useCallback(() => {
     if (hasDateError || isUnchanged) return;
 
     const s = date.start ? date.start.format(DATE_FORMAT) : undefined;
@@ -297,22 +314,28 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
   }, [router, onClose, hasDateError, isUnchanged, date, multi, allSets]);
 
   return {
-    start: date.start,
-    end: date.end,
-    presetKey: date.presetKey,
-    startErrorMsg,
-    endErrorMsg,
-    hasDateError,
-    handlePreset,
-    handleStartChange,
-    handleEndChange,
-    options,
-    multi,
-    toggleValue,
-    clickAll,
-    isUnchanged,
-    handleApply,
-    handleCancel,
-    syncOnOpen,
+    state: {
+      date: { start: date.start, end: date.end, presetKey: date.presetKey },
+      multi,
+      options,
+    },
+    errors: {
+      start: startErrorMsg,
+      end: endErrorMsg,
+    },
+    flags: {
+      hasDateError,
+      isUnchanged,
+    },
+    actions: {
+      preset,
+      setStart,
+      setEnd,
+      toggle,
+      selectAll,
+      apply,
+      cancel,
+      syncOnOpen,
+    },
   };
 };

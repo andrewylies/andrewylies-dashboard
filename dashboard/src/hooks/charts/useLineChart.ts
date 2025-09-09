@@ -45,7 +45,7 @@ export const useLineChart = ({
     return { startTs: s, endTs: e };
   }, [start, end]);
 
-  // 이진탐색으로 슬라이스 인덱스 결정
+  // 슬라이스 인덱스 결정
   const [lo, hi] = useMemo<[number, number]>(() => {
     if (prepared.ts.length === 0) return [0, 0];
     const l = lowerBound(prepared.ts, startTs);

@@ -24,7 +24,7 @@ export function useScatterChart({
   candidates,
   getVal,
 }: Props): { scatterOption?: EChartsOption } {
-  // (1) 정렬 + 타임스탬프 인덱스
+  // 정렬 + 타임스탬프 인덱스
   const prepared = useMemo(() => {
     if (sales.length === 0) {
       return {
@@ -41,7 +41,7 @@ export function useScatterChart({
     return { rows, ts };
   }, [sales]);
 
-  // (2) 구간 경계
+  // 구간 경계
   const [lo, hi] = useMemo<[number, number]>(() => {
     if (prepared.ts.length === 0) return [0, 0];
     const startTs = start ? dayjs(start).valueOf() : Number.NEGATIVE_INFINITY;

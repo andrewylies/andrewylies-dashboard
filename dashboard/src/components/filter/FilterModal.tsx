@@ -15,30 +15,13 @@ import { CapsuleSection } from '@/components/filter/section/CapsuleSection.tsx';
 import { useEffect } from 'react';
 
 type Props = { open: boolean; onClose: () => void };
+
 export const FilterModal = ({ open, onClose }: Props) => {
-  const {
-    start,
-    end,
-    presetKey,
-    startErrorMsg,
-    endErrorMsg,
-    hasDateError,
-    isUnchanged,
-    handlePreset,
-    handleStartChange,
-    handleEndChange,
-    options,
-    multi,
-    toggleValue,
-    clickAll,
-    handleApply,
-    handleCancel,
-    syncOnOpen,
-  } = useFilterModal(onClose);
+  const { state, errors, flags, actions } = useFilterModal(onClose);
 
   useEffect(() => {
-    if (open) syncOnOpen();
-  }, [open, syncOnOpen]);
+    if (open) actions.syncOnOpen();
+  }, [open, actions]);
 
   const sections: {
     key: FilterKey;
@@ -48,56 +31,65 @@ export const FilterModal = ({ open, onClose }: Props) => {
     {
       key: 'publisher',
       title: FILTER_LABELS.publisher,
-      options: options.publisher,
+      options: state.options.publisher,
     },
-    { key: 'genre', title: FILTER_LABELS.genre, options: options.genre },
-    { key: 'status', title: FILTER_LABELS.status, options: options.status },
+    { key: 'genre', title: FILTER_LABELS.genre, options: state.options.genre },
+    {
+      key: 'status',
+      title: FILTER_LABELS.status,
+      options: state.options.status,
+    },
     {
       key: 'category',
       title: FILTER_LABELS.category,
-      options: options.category,
+      options: state.options.category,
     },
-    { key: 'tags', title: FILTER_LABELS.tags, options: options.tags },
+    { key: 'tags', title: FILTER_LABELS.tags, options: state.options.tags },
   ];
 
   return (
-    <Dialog open={open} onClose={handleCancel} fullWidth maxWidth="md">
-      <DialogTitle sx={{ textTransform: 'uppercase' }} fontWeight={'bolder'}>
+    <Dialog open={open} onClose={actions.cancel} fullWidth maxWidth="md">
+      <DialogTitle sx={{ textTransform: 'uppercase' }} fontWeight="bolder">
         {PAGE_TEXT.DASHBOARD.BUTTON.FILTER}
       </DialogTitle>
+
       <DialogContent>
         <Stack spacing={3}>
-          <DatePresetSection currentKey={presetKey} onSelect={handlePreset} />
+          <DatePresetSection
+            currentKey={state.date.presetKey}
+            onSelect={actions.preset}
+          />
           <DatePickersSection
-            start={start}
-            end={end}
-            onStart={handleStartChange}
-            onEnd={handleEndChange}
-            startError={startErrorMsg}
-            endError={endErrorMsg}
+            start={state.date.start}
+            end={state.date.end}
+            onStart={actions.setStart}
+            onEnd={actions.setEnd}
+            startError={errors.start}
+            endError={errors.end}
           />
           {sections.map(({ key, title, options }) => (
             <CapsuleSection
               key={key}
               title={title}
               type={key}
-              isAll={multi[key].isAll}
-              onAll={() => clickAll(key)}
-              selected={multi[key].set}
+              isAll={state.multi[key].isAll}
+              onAll={() => actions.selectAll(key)}
+              selected={state.multi[key].set}
               options={options}
-              onToggle={toggleValue}
+              onToggle={actions.toggle}
             />
           ))}
         </Stack>
       </DialogContent>
+
       <DialogActions>
-        <Button onClick={handleCancel} color="inherit">
+        <Button onClick={actions.cancel} color="inherit">
           취소
         </Button>
         <Button
-          onClick={handleApply}
+          onClick={actions.apply}
           variant="contained"
-          disabled={hasDateError || isUnchanged}
+          disabled={flags.hasDateError || flags.isUnchanged}
         >
           적용
         </Button>
