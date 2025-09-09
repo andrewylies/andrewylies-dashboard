@@ -93,7 +93,6 @@ export const Layout = () => {
               <LogoIcon /> Sales Dashboard
             </Typography>
 
-            {/* Hover Profile Menu */}
             <Box
               sx={{ flexGrow: 0, position: 'relative' }}
               onMouseEnter={handleEnter}

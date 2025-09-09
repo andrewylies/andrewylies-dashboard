@@ -3,7 +3,7 @@ import { formatKRWShort } from '@/lib/format';
 import { CHART_TEXT } from '@/constants/common.ts';
 
 export type StackedBarParams = {
-  /** y축 라벨: 출판사 목록 (정렬 완료) */
+  /** y축 라벨: 출판사 목록*/
   categories: string[];
   /** 스택 라벨: 카테고리 목록 */
   stacks: string[];
