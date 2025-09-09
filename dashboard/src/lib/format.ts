@@ -124,6 +124,6 @@ export const formatKRWShort = (value: number, withSymbol = false) => {
           ? { v: abs / 1_000, s: 'K' }
           : { v: abs, s: '' };
 
-  const formatted = unit.v % 1 === 0 ? unit.v.toString() : unit.v.toFixed(0);
+  const formatted = unit.v % 1 === 0 ? unit.v.toString() : unit.v.toFixed(1);
   return `${sign}${withSymbol ? '₩' : ''}${formatted}${unit.s}`;
 };
