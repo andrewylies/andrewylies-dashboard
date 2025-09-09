@@ -77,7 +77,7 @@ export type IndexBundle = {
   byTag: Map<string, Set<number>>;
 };
 
-import { csvToSet } from '@/lib';
+import { csvToSet, summarizeCsv } from '@/lib';
 import dayjs from 'dayjs';
 import {
   DATE_FORMAT,
@@ -122,17 +122,13 @@ export const buildDateChip = (search: DashboardSearch) => {
 };
 
 /** 다중 선택 필터 칩 배열 생성 (status는 라벨 매핑 적용) */
-export const buildMultiChips = (
-  search: DashboardSearch,
-  summarize: (label: string, csv: string) => string
-) => {
+export const buildMultiChips = (search: DashboardSearch) => {
   return MULTI_KEYS.reduce<Array<{ key: FilterKey; label: string }>>(
     (acc, k) => {
       const v = search[k];
       if (!v) return acc;
       const shown = k === 'status' ? mapCsv(v, STATUS_LABELS) : v;
-
-      acc.push({ key: k, label: summarize(FILTER_LABELS[k], shown) });
+      acc.push({ key: k, label: summarizeCsv(FILTER_LABELS[k], shown) });
       return acc;
     },
     []

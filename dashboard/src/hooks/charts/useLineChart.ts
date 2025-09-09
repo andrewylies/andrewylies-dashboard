@@ -14,9 +14,6 @@ export type UseLineChartResult = {
   yMax: number;
 };
 
-/**
- * 라인 차트 옵션을 생성하는 훅 (이진탐색 기반 범위 슬라이스)
- */
 export const useLineChart = ({
   sales,
   start,

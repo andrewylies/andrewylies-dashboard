@@ -10,7 +10,7 @@ import {
 } from '@/constants';
 import { useFilterStore } from '@/stores/filterStore';
 import type { DashboardSearch, FilterKey, FilterOptionsMap } from '@/types';
-import { csvToSetFiltered, setToCsv } from '@/lib';
+import { csvToSet, setToCsv } from '@/lib';
 
 type UseFilterModalReturn = {
   /** 선택된 시작일 */
@@ -137,7 +137,7 @@ export const useFilterModal = (onClose: () => void): UseFilterModalReturn => {
 
   const initMulti = useCallback(
     (csv?: string, allSet?: Set<string>): MultiState => {
-      const parsed = csvToSetFiltered(csv);
+      const parsed = csvToSet(csv, true);
       if (!allSet || parsed.size === 0 || isAllCovered(parsed, allSet))
         return asAll();
       return { isAll: false, set: parsed };

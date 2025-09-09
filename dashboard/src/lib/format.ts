@@ -27,15 +27,21 @@ export const sanitizeCsv = (v: unknown): string | undefined => {
   return uniq.join(',');
 };
 
-/** CSV 문자열을 Set으로 변환 (빈 결과면 undefined) */
-export const csvToSet = (csv?: string): Set<string> | undefined => {
-  if (!csv) return undefined;
+/**
+ * CSV 문자열을 Set으로 변환
+ * - 공백/빈값 제거
+ * - removeAll=true 시 'all' 제거
+ */
+export const csvToSet = (csv?: string, removeAll = false): Set<string> => {
   const set = new Set<string>();
+  if (!csv) return set;
   for (const raw of csv.split(',')) {
     const v = raw.trim();
-    if (v) set.add(v);
+    if (v && (!removeAll || v.toLowerCase() !== 'all')) {
+      set.add(v);
+    }
   }
-  return set.size ? set : undefined;
+  return set;
 };
 
 /** Set을 CSV 문자열로 변환 (빈 Set이면 undefined) */
@@ -44,17 +50,6 @@ export const setToCsv = (set: Set<string>) => {
   return Array.from(set)
     .sort((a, b) => a.localeCompare(b))
     .join(',');
-};
-
-/** CSV → Set (공백·빈값·'all' 제거) */
-export const csvToSetFiltered = (csv?: string) => {
-  if (!csv) return new Set<string>();
-  return new Set(
-    csv
-      .split(',')
-      .map((s) => s.trim())
-      .filter((v) => v && v.toLowerCase() !== 'all')
-  );
 };
 
 /**

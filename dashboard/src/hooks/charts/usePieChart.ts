@@ -4,6 +4,7 @@ import type { Sales } from '@/types/api/sales';
 import { makeGenrePieOption } from '@/constants/charts/pie';
 import { CHART_TEXT } from '@/constants';
 import type { ChartProps } from '@/types';
+import { lowerBound, upperBound } from '@/lib';
 
 export type PieOptions = {
   /** 장르별 매출 비율 */
@@ -12,33 +13,10 @@ export type PieOptions = {
   count?: EChartsOption;
 };
 
-/** 불변 베이스 옵션(상수화): 데이터와 무관한 공통 파츠는 재사용 */
 const PIE_BASE = {
   tooltip: { trigger: 'item' },
   legend: { type: 'scroll', bottom: 0 },
 } as const;
-
-function lowerBound(arr: readonly number[], target: number): number {
-  let lo = 0,
-    hi = arr.length;
-  while (lo < hi) {
-    const mid = (lo + hi) >>> 1;
-    if (arr[mid] < target) lo = mid + 1;
-    else hi = mid;
-  }
-  return lo;
-}
-
-function upperBound(arr: readonly number[], target: number): number {
-  let lo = 0,
-    hi = arr.length;
-  while (lo < hi) {
-    const mid = (lo + hi) >>> 1;
-    if (arr[mid] <= target) lo = mid + 1;
-    else hi = mid;
-  }
-  return lo;
-}
 
 export const usePieChart = ({
   sales,
