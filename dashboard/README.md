@@ -1,10 +1,10 @@
-# KP Dashboard
+# AW Dashboard
 
 ---
 
 ## 📖 개요
 
-**KP Dashboard**는 카카오픽코마의 웹툰 매출 데이터를 기반으로  
+**AW Dashboard**는 dummy API 매출 데이터를 기반으로  
 **필터링, 시각화, 테이블 탐색 기능을 통합한 데이터 분석용 대시보드**입니다.
 
 - **MUI + ECharts 기반의 시각화 및 UI 구성**  
