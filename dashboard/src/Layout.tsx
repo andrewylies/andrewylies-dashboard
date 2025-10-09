@@ -23,7 +23,6 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import * as React from 'react';
 import { MENU_PROFILE } from '@/constants';
 import { FilterInitializer } from '@/components/filter/FilterInitializer.tsx';
-import { LogoIcon } from '@/components/icon/logo.tsx';
 import type { ProfileKey } from '@/types';
 import { Footer } from '@/components/common/Footer.tsx';
 import { ScrollTop } from '@/components/common/ScrollTop.tsx';
@@ -90,7 +89,7 @@ export const Layout = () => {
                 textTransform: 'uppercase',
               }}
             >
-              <LogoIcon /> Sales Dashboard
+              Sales Dashboard
             </Typography>
 
             <Box

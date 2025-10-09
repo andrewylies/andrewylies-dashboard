@@ -165,10 +165,9 @@ export const useFilterModal = (onClose: () => void): UseFilterModalVM => {
       s = search.start ? dayjs(search.start) : null;
       e = search.end ? dayjs(search.end) : null;
     } else {
-      const def = PRESET_RANGES.find((x) => x.key === DEFAULT_PRESET_KEY)!;
-      const r = def.get();
-      s = dayjs(r.start);
-      e = dayjs(r.end);
+      // 기본 날짜: 2025년 8월 4일 ~ 8월 24일
+      s = dayjs('2025-08-04');
+      e = dayjs('2025-08-24');
     }
 
     const pk = matchPresetKey(s, e);

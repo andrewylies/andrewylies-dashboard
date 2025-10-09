@@ -1,15 +1,12 @@
 import { useMemo } from 'react';
 import { notFound } from '@tanstack/react-router';
-import dayjs from 'dayjs';
 import { useSalesQuery } from '@/hooks/useSalesQuery';
 import { useProductsQuery } from '@/hooks/useProductsQuery';
-import { DEFAULT_PRESET_KEY, PRESET_RANGES } from '@/constants/date';
 import { ERROR_CODES } from '@/constants';
 import type { ChartProps, DashboardSearch } from '@/types';
 import type { Sales } from '@/types/api/sales';
 import { buildIndexBy } from '@/lib/indexers';
 import { makeCandidates, type IndexBundle } from '@/lib/search';
-import { formatDateYMD } from '@/lib/time';
 
 /**
  * 공통 차트 훅
@@ -35,14 +32,11 @@ export const useChartCommon = (search: DashboardSearch): ChartProps => {
     if (search.start && search.end)
       return { start: search.start, end: search.end };
 
-    const preset = PRESET_RANGES.find((p) => p.key === DEFAULT_PRESET_KEY);
-    const fallback = preset
-      ? preset.get()
-      : (() => {
-          const end = dayjs();
-          const start = end.subtract(29, 'day');
-          return { start: formatDateYMD(start), end: formatDateYMD(end) };
-        })();
+    // 기본 날짜: 2025년 8월 4일 ~ 8월 24일
+    const fallback = {
+      start: '2025-08-04',
+      end: '2025-08-24',
+    };
 
     return {
       start: search.start ?? fallback.start,

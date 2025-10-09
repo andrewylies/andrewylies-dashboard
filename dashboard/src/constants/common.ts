@@ -6,7 +6,7 @@ export const MENU_PROFILE: ProfileItem[] = [
   {
     key: 'portfolio',
     label: 'Portfolio',
-    url: 'https://dev-opera.vercel.app/',
+    url: 'https://andrewylies.info/',
   },
   { key: 'github', label: 'GitHub', url: 'https://github.com/andrewylies' },
   {
