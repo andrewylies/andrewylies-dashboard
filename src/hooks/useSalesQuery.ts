@@ -13,6 +13,6 @@ export const useSalesQuery = () =>
     refetchInterval: 60_000,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
-    staleTime: 30_000,
-    gcTime: 5 * 60_000,
+      staleTime: Infinity,
+      gcTime: Infinity,
   });
