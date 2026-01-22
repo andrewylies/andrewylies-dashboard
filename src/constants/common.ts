@@ -3,17 +3,17 @@ export const CHART_SECTION_DEFAULT_HEIGHT = 400;
 export const TABLE_SECTION_DEFAULT_HEIGHT = 500;
 
 export const MENU_PROFILE: ProfileItem[] = [
-  {
-    key: 'portfolio',
-    label: 'Portfolio',
-    url: '/',
-  },
-  { key: 'github', label: 'GitHub', url: '/' },
-  {
-    key: 'linkedin',
-    label: 'LinkedIn',
-    url: '/',
-  },
+  // {
+  //   key: 'portfolio',
+  //   label: 'Portfolio',
+  //   url: '/',
+  // },
+  // { key: 'github', label: 'GitHub', url: '/' },
+  // {
+  //   key: 'linkedin',
+  //   label: 'LinkedIn',
+  //   url: '/',
+  // },
 ];
 
 export const ERROR_MESSAGE = {
