@@ -97,7 +97,7 @@ export const Layout = () => {
               onMouseEnter={handleEnter}
               onMouseLeave={handleLeave}
             >
-              {/* <Button
+              <Button
                 color="inherit"
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
@@ -107,7 +107,7 @@ export const Layout = () => {
                 }
                 startIcon={<AccountCircleIcon fontSize="small" />}
               >
-                서문명수
+              
               </Button>
 
               <Popover
@@ -140,7 +140,7 @@ export const Layout = () => {
                     </ListItemButton>
                   ))}
                 </List>
-              </Popover> */}
+              </Popover>
             </Box>
           </Toolbar>
         </Container>
