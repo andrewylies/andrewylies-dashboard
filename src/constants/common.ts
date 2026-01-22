@@ -6,13 +6,13 @@ export const MENU_PROFILE: ProfileItem[] = [
   {
     key: 'portfolio',
     label: 'Portfolio',
-    url: 'https://andrewylies.info/',
+    url: '/',
   },
-  { key: 'github', label: 'GitHub', url: 'https://github.com/andrewylies' },
+  { key: 'github', label: 'GitHub', url: '/' },
   {
     key: 'linkedin',
     label: 'LinkedIn',
-    url: 'https://www.linkedin.com/in/andrewylies',
+    url: '/',
   },
 ];
 
